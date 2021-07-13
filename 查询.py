@@ -1,7 +1,9 @@
 import pymysql
+import os
 
 
 def checkmessage():
+    os.system("cls")
     name = input("消息查询，输入姓名：")
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     cursor = conn.cursor()
@@ -15,6 +17,7 @@ def checkmessage():
 
 
 def checkproblem():
+    os.system("cls")
     name = input("问题查询，输入姓名：")
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     cursor = conn.cursor()
@@ -28,6 +31,7 @@ def checkproblem():
 
 
 def checkALLmessage():
+    os.system("cls")
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     cursor = conn.cursor()
     sql = str.format('SELECT * FROM msg where type="message" and status=0 group by cpid')
@@ -40,6 +44,7 @@ def checkALLmessage():
 
 
 def checkALLproblem():
+    os.system("cls")
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     cursor = conn.cursor()
     sql = str.format('SELECT * FROM msg where type="problem" and status=0 group by cpid')
