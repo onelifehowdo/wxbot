@@ -2,17 +2,20 @@ import pymysql
 import xlrd
 import Config
 
-mlist=[]
+mlist = []
+
+
 def clean(value):
-    value=value.replace(" ","")
+    value = value.replace(" ", "")
     value = value.replace("\n", "")
-    return  value
+    return value
+
 
 class mdata:
-    def __init__(self,name,model,keyList):
-        self.name=name
-        self.model=model
-        self.keyList=keyList
+    def __init__(self, name, model, keyList):
+        self.name = name
+        self.model = model
+        self.keyList = keyList
 
 
 def getUnUseMsg():
@@ -45,16 +48,16 @@ def init():
 
 
 def getbean(msg):
-    model="another"
-    name=None
-    msg=str(msg).lower()
+    model = "another"
+    name = None
+    msg = str(msg).lower()
     for i in mlist:
         for j in i.keyList:
             # print(j)
             if j in msg:
-                model=i.model
-                name=i.name
+                model = i.model
+                name = i.name
     else:
-        return model,name
+        return model, name
 # init()
 # print(getbean("mqtt"))
