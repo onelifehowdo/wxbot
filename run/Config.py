@@ -1,5 +1,8 @@
 boring = []
+unusegrp=["R:1075051383"]
 
+def ungrp(rid):
+    return not (rid in unusegrp)
 
 def isStaff(id):
     engineer = {

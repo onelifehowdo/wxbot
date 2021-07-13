@@ -12,6 +12,7 @@ import Message
 import checker
 import grpNaGet
 import mysqlAll
+import Config
 
 wxwork_manager = WxWorkManager(libs_path='libs')
 sendList = ["nihao"]
@@ -31,7 +32,7 @@ def on_connect(client_id):
 def on_recv(client_id, message_type, message_data):
     # print('[on_recv] client_id: {0}, message_type: {1}, message:{2}'.format(client_id, message_type,
     #                                                                         json.dumps(message_data)))
-    # print(message_data)
+    # print(message_type)
     pass
 
 
@@ -44,24 +45,39 @@ class EchoBot(wxwork.CallbackHandler):
 
     @wxwork.RECV_CALLBACK(in_class=True)
     def on_message(self, client_id, message_type, message_data):
-        # 如果是文本消息
-        if message_type == MessageType.MT_RECV_TEXT_MSG and message_data["conversation_id"]!="R:1075051383":
-            atList=message_data["at_list"]
+        # 去处不响应的群
+        if message_type == MessageType.MT_RECV_TEXT_MSG and Config.ungrp(message_data["conversation_id"]):
+            # 如果是文本消息
+            print("文本消息")
+            atList = message_data["at_list"]
             cpId = message_data["conversation_id"]
             cpName = Config.getCpname(cpId)
             senderId = message_data["sender"]
             speaker = message_data["sender_name"]
             text = str(message_data["content"]).replace("\"", "")
             mtime = int(message_data["send_time"])
-            print("["+time.strftime('%Y-%m-%d %H:%M', time.localtime())+"]:"+text)
-            myTools.ctrl().addMessage(Message.message(atList,cpId, cpName, senderId, speaker, text, mtime))
-            mysqlAll.sqliteControl().add(Message.message(None,cpId, cpName, senderId, speaker, text, mtime))
+            print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]:" + speaker + ":" + text)
+            myTools.ctrl().addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
+            mysqlAll.sqliteControl().add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
             if "$$$" in text:
-                p=text.split("$$$")
-                m_name=p[0]
-                m_note=p[1]
-                grpNaGet.grpget(cpId,m_name,speaker,mtime,m_note).start()
+                p = text.split("$$$")
+                m_name = p[0]
+                m_note = p[1]
+                grpNaGet.grpget(cpId, m_name, speaker, mtime, m_note).start()
             pass
+        elif message_type == MessageType.MT_RECV_IMG_MSG and Config.ungrp(message_data["conversation_id"]):
+            # 如果是图片消息
+            print("图片消息")
+            atList = []
+            cpId = message_data["conversation_id"]
+            cpName = Config.getCpname(cpId)
+            senderId = message_data["sender"]
+            speaker = message_data["sender_name"]
+            text = "图/片/消/息"
+            mtime = int(message_data["send_time"])
+            print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]:" + speaker + ":" + text)
+            myTools.ctrl().addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
+            mysqlAll.sqliteControl().add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
 
 
 if __name__ == "__main__":
