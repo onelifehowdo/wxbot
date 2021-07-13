@@ -59,7 +59,7 @@ def filte(msg):
         # else:
         #     print(print(msg.text+"有意义]"))
         m_text=str(msg.text)
-        m_text=re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\n',"",m_text)
+        m_text=re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\s',"",m_text)
         m_text=re.sub(r'\d+',"",m_text)
         if not Config.isBoring(m_text):#有意义
             sqlMsg=Message.sqlMessage(msg,"客户")
