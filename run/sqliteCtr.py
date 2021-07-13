@@ -5,7 +5,7 @@ import pymysql
 import string
 import time
 import threading
-
+import Config
 
 class ctrMsg:
     def __init__(self, ctr, msg):
@@ -68,6 +68,8 @@ class sqliteControl(threading.Thread):
                             t = cursor.fetchone()
                             if not t is None:
                                 engineer = t[0]
+                                if not Config.test_isStaff(t[0]):
+                                    engineer="盛玉霞"
                             else:
                                 engineer = "盛玉霞"
 
@@ -75,7 +77,6 @@ class sqliteControl(threading.Thread):
                             data = (
                             tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model, engineer,
                             status, person)
-                            # print(str.format(sql % data))
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
