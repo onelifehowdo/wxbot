@@ -28,7 +28,7 @@ class sqliteControl(threading.Thread):
             conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
                                    db="wxwork_message")
             tableName = "msg"
-            print("数据库打开成功")
+            print("消息数据库打开成功")
             try:
                 while True:
                     if len(cls.MsgQueue) > 0:
@@ -106,10 +106,10 @@ class sqliteControl(threading.Thread):
             except Exception as e:
                 # conn.rollback()
                 # logging.getLogger("sql").error(traceback.format_exc())
-                print("数据库重连")
+                print("消息数据库重连")
                 continue
                 pass
             finally:
                 if not conn is None:
                     conn.close()
-                    print("数据库关闭")
+                    print("消息数据库关闭")

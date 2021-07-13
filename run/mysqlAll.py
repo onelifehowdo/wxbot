@@ -51,8 +51,10 @@ class sqliteControl(threading.Thread):
             except Exception as e:
                 # conn.rollback()
                 # logging.getLogger("sql").error(traceback.format_exc())
+                print("全部消息数据库断联")
+                continue
                 pass
             finally:
                 if not conn is None:
                     conn.close()
-                    print("总数据库关闭")
+                    print("全部消息数据库关闭")
