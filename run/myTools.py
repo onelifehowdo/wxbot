@@ -23,9 +23,8 @@ class ctrl(threading.Thread):
     ins=None
 
     def __new__(cls, *args, **kwargs):
-        if not cls.m_ctr.isAlive():
-            cls.m_ctr.start()
         if cls.ins is None:
+            cls.m_ctr.start()
             cls.ins=super().__new__(cls)
         return cls.ins
 
@@ -33,8 +32,8 @@ class ctrl(threading.Thread):
         self.id = id
         threading.Thread.__init__(self)
 
-    def addMessage(self, msg):
-        self.messageList.append(msg)
+    def addMessage(cls, msg):
+        cls.messageList.append(msg)
 
     def run(cls):
         # 任务分配
