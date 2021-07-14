@@ -17,12 +17,6 @@ def filte(msg):
         Model, engineerName = init.getbean(str(msg.text))
         r = Config.test_isStaff(msg.speaker)
         if r:  # 应用研发部
-            # msgType = "STAFF"
-            # sqlMsg = Message.sqlMessage(msg, "员工")
-            # sqlMsg.setType("message")
-            # sqlMsg.setStatus(0)
-            # sqlMsg.setPerson(None)
-            # Model, engineerName = init.getbean(str(msg.text))
             if len(msg.atList) > 0:  # @回复
                 if ("好的我看看！！！" in msg.text) or ("帮看一下！！！" in msg.text) or ("$_$" in msg.text):
                     sqlMsg.setType("problem")
