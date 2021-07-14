@@ -20,7 +20,14 @@ class message:
 class ctrl(threading.Thread):
     messageList = []
     m_ctr = sqliteCtr.sqliteControl()
-    m_ctr.start()
+    ins=None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.m_ctr.isAlive():
+            cls.m_ctr.start()
+        if cls.ins is None:
+            cls.ins=super().__new__(cls)
+        return cls.ins
 
     def __init__(self):
         self.id = id

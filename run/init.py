@@ -31,6 +31,35 @@ def getUnUseMsg():
     cursor.close()
     conn.close()
 
+def getStaff():
+    conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+    print("正在读取公司员工")
+    cursor = conn.cursor()
+    sql = 'SELECT name , department FROM wxwork_message.staff'
+    cursor.execute(sql)
+    r = cursor.fetchall()
+    for i in r:
+        Config.hz_all_staff.append(i[0])
+        if i[1] == "应用研发部":
+            Config.staffList.append(i[0])
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def getGrpId():
+    conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+    print("正在读取公司员工")
+    cursor = conn.cursor()
+    sql = 'SELECT rid,groupname FROM wxwork_message.groupnote'
+    cursor.execute(sql)
+    r = cursor.fetchall()
+    for i in r:
+        # Config.CP[i[0]] = i[1]
+        print("没有配置群字典")
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 
 def init():
     print("正在读取关键字")
