@@ -7,6 +7,7 @@ import time
 import threading
 import Config
 
+
 class ctrMsg:
     def __init__(self, ctr, msg):
         self.ctr = ctr
@@ -54,8 +55,9 @@ class sqliteControl(threading.Thread):
                             cursor = conn.cursor()
                             sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
                             data = (
-                            tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model, engineer,
-                            status, person)
+                                tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
+                                engineer,
+                                status, person)
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
@@ -69,14 +71,15 @@ class sqliteControl(threading.Thread):
                             if not t is None:
                                 engineer = t[0]
                                 if not Config.test_isStaff(t[0]):
-                                    engineer="盛玉霞"
+                                    engineer = "盛玉霞"
                             else:
                                 engineer = "盛玉霞"
 
                             sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
                             data = (
-                            tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model, engineer,
-                            status, person)
+                                tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
+                                engineer,
+                                status, person)
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
@@ -97,8 +100,8 @@ class sqliteControl(threading.Thread):
                                 cursor.execute(str.format(sql % data))
                                 sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
                                 data = (
-                                tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
-                                engineer, status, person)
+                                    tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
+                                    engineer, status, person)
                                 cursor.execute(str.format(sql % data))
                                 conn.commit()
                                 cursor.close()
