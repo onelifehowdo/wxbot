@@ -29,14 +29,16 @@ class check(threading.Thread):
                     "谭立元": "tanliyuan",
                     "郑治": "zhengzhi",
                     "廖瑞": "liaorui",
-                    "周维华": "zhouweihau",
+                    "周维华": "zhouweihua",
                     "孙张鑫": "sunzhangxin",
                     "小助理": "xiaozhushou",
                     "伍珈沁": "wujiaqin",
                     "王磊": "wanglei",
                     "谢萧辉": "xiexiaohui",
                     "刘嘉诚": "liujiacheng",
-                    "黄何":"huanghe"
+                    "黄何":"huanghe",
+                    "WHB":"whb",
+                    "石善振":"shishanzhen"
                 }
                 #
                 murl="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"

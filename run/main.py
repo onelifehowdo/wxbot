@@ -32,7 +32,8 @@ def on_connect(client_id):
 def on_recv(client_id, message_type, message_data):
     # print('[on_recv] client_id: {0}, message_type: {1}, message:{2}'.format(client_id, message_type,
     #                                                                         json.dumps(message_data)))
-    # print(message_type)
+    print(message_type)
+    print(message_data)
     pass
 
 
@@ -48,6 +49,7 @@ class EchoBot(wxwork.CallbackHandler):
         # 去处不响应的群
         if message_type == MessageType.MT_RECV_TEXT_MSG and Config.ungrp(message_data["conversation_id"]):
             # 如果是文本消息
+            print(message_data)
             print("文本消息")
             atList = message_data["at_list"]
             cpId = message_data["conversation_id"]
@@ -82,10 +84,10 @@ class EchoBot(wxwork.CallbackHandler):
 
 if __name__ == "__main__":
     if init.init():
-        mysqlAll.sqliteControl().start()
-        myTools.ctrl().start()
+        # mysqlAll.sqliteControl().start()
+        # myTools.ctrl().start()
         echoBot = EchoBot()
-        checker.check().start()
+        # checker.check().start()
 
     # 添加回调实例对象
     wxwork_manager.add_callback_handler(echoBot)

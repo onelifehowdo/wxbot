@@ -1,8 +1,10 @@
 boring = []
-unusegrp=["R:1075051383"]
+unusegrp = ["R:1075051383"]
+
 
 def ungrp(rid):
     return not (rid in unusegrp)
+
 
 def isStaff(id):
     engineer = {
@@ -520,24 +522,18 @@ def isBoring(text):
     return (text in boring)
 
 
-def test_isStaff(name):
-    hz = [
-        "朱天华", "盛玉霞", "孙志鹏", "沈园园",
-        "祝平军", "王海洋", "曲振", "邓海",
-        "谭立元", "郑治", "廖瑞", "周维华",
-        "孙张鑫", "小助理", "伍珈沁", "王磊",
-        "谢萧辉", "邓海", "刘嘉诚", "郑治", "黄何", "WHB", "石善振"
-    ]
-    return True if name in hz else False
-
-
 staffList = [
     "朱天华", "盛玉霞", "孙志鹏", "沈园园",
     "祝平军", "王海洋", "曲振", "邓海",
     "谭立元", "郑治", "廖瑞", "周维华",
     "孙张鑫", "小助理", "伍珈沁", "王磊",
-    "谢萧辉", "邓海", "刘嘉诚", "黄何"
+    "谢萧辉", "邓海", "刘嘉诚", "黄何", "WHB", "石善振"
 ]
+
+
+def test_isStaff(name):
+    return (name in staffList)
+
 
 hz_all_staff = ['李保正', '郑治', '陆相成', '陈媛媛', '旷文飞', '李武',
                 '毛宇', '喻利华Lemon', '何晓洪', '陈玺', '何春梅', '李克正',

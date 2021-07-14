@@ -4,6 +4,13 @@ import init
 import re
 
 
+def cleanMsg(m_text):
+    m_text = re.sub(r'.+\n.+\n-{6}\n', "", m_text)  # 去除引用
+    m_text = re.sub(r'@\S+\b', "", m_text)  # 去除@
+    m_text = re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\s|\'\"\‘\“', "", m_text)  # 去除符号
+    m_text = re.sub(r'\d+', "", m_text)#去除数字
+    return m_text
+
 def filte(msg):
     msgType = None
     sqlMsg = None
@@ -18,7 +25,7 @@ def filte(msg):
         r = Config.test_isStaff(msg.speaker)
         if r:  # 应用研发部
             if len(msg.atList) > 0:  # @回复
-                if ("好的我看看！！！" in msg.text) or ("帮看一下！！！" in msg.text) or ("$_$" in msg.text):
+                if ("$_$" in msg.text):
                     sqlMsg.setType("problem")
                     sqlMsg.setEngineer(msg.speaker)  # 给自己
                     # Model, engineerName = init.getbean(str(msg.text))
@@ -50,27 +57,47 @@ def filte(msg):
                 pass
     # 客户
     else:
-        # if Config.isBoring(msg.text):
-        #     print(msg.text+"[无意义]")
-        # else:
-        #     print(print(msg.text+"有意义]"))
-        m_text = str(msg.text)
-        m_text = re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\s', "", m_text)
-        m_text = re.sub(r'\d+', "", m_text)
-        if not Config.isBoring(m_text):  # 有意义
-            sqlMsg = Message.sqlMessage(msg, "客户")
-            Model, engineerName = init.getbean(m_text)
-            if not Model == "another":
-                # 识别到关键字的消息
-                sqlMsg.setStatus(0)
-                sqlMsg.setType("message")
-                sqlMsg.setModle(Model)
-                sqlMsg.setEngineer(engineerName)
-                msgType = "HAVE_KEY"
+        if len(msg.atList) > 0:  # 分析@
+            for at in msg.atList:
+                if Config.test_isHZstaff(at['nickname']):
+                    m_text = str(msg.text)
+                    m_text = cleanMsg(m_text)
+                    if not Config.isBoring(m_text):  # 有意义
+                        sqlMsg = Message.sqlMessage(msg, "客户")
+                        Model, engineerName = init.getbean(m_text)
+                        if not Model == "another":
+                            # 识别到关键字的消息
+                            sqlMsg.setStatus(0)
+                            sqlMsg.setType("message")
+                            sqlMsg.setModle(Model)
+                            sqlMsg.setEngineer(engineerName)
+                            msgType = "HAVE_KEY"
+                        else:
+                            # 未识别到关键字的消息
+                            sqlMsg.setStatus(0)
+                            sqlMsg.setType("message")
+                            sqlMsg.setModle("another")
+                            msgType = "NO_KEY"
+                    break
             else:
-                # 未识别到关键字的消息
-                sqlMsg.setStatus(0)
-                sqlMsg.setType("message")
-                sqlMsg.setModle("another")
-                msgType = "NO_KEY"
+                return None, None  # 不处理
+        else:  # 分析消息
+            m_text = str(msg.text)
+            m_text = cleanMsg(m_text)
+            if not Config.isBoring(m_text):  # 有意义
+                sqlMsg = Message.sqlMessage(msg, "客户")
+                Model, engineerName = init.getbean(m_text)
+                if not Model == "another":
+                    # 识别到关键字的消息
+                    sqlMsg.setStatus(0)
+                    sqlMsg.setType("message")
+                    sqlMsg.setModle(Model)
+                    sqlMsg.setEngineer(engineerName)
+                    msgType = "HAVE_KEY"
+                else:
+                    # 未识别到关键字的消息
+                    sqlMsg.setStatus(0)
+                    sqlMsg.setType("message")
+                    sqlMsg.setModle("another")
+                    msgType = "NO_KEY"
     return msgType, sqlMsg

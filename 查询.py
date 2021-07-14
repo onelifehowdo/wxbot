@@ -13,6 +13,8 @@ def checkmessage():
     for i in r:
         print("[" + i[2], end="]")
         print(i[5])
+    else:
+        print("共%d条消息" % len(r))
     conn.close()
 
 
@@ -27,6 +29,8 @@ def checkproblem():
     for i in r:
         print("[" + i[2], end="]")
         print(i[5])
+    else:
+        print("共%d条问题" % len(r))
     conn.close()
 
 
@@ -40,6 +44,8 @@ def checkALLmessage():
     for i in r:
         print("[" + i[2], end="]")
         print(i[5] + "--->" + i[10])
+    else:
+        print("共%d条消息" % len(r))
     conn.close()
 
 
@@ -53,10 +59,13 @@ def checkALLproblem():
     for i in r:
         print("[" + i[2], end="]")
         print(i[5] + "--->" + i[10])
+    else:
+        print("共%d条问题" % len(r))
     conn.close()
 
 
 while True:
+    os.system("color 02")
     print("-"*22)
     print("|[1]:查询自己未响应的消息|")
     print("|[2]:查询自己未解决的问题|")
