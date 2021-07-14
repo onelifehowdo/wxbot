@@ -86,7 +86,7 @@ if __name__ == "__main__":
         mysqlAll.sqliteControl().start()
         myTools.ctrl().start()
         echoBot = EchoBot()
-        # checker.check().start()
+        checker.check().start()
 
     # 添加回调实例对象
     wxwork_manager.add_callback_handler(echoBot)
