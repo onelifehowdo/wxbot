@@ -59,7 +59,7 @@ class EchoBot(wxwork.CallbackHandler):
             print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]:" + speaker + ":" + text)
             myTools.ctrl().addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
             mysqlAll.sqliteControl().add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
-            if "$$$" in text:
+            if "$$$" in text and Config.test_isHZstaff(speaker):
                 p = text.split("$$$")
                 m_name = p[0]
                 m_note = p[1]
