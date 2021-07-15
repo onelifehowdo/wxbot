@@ -48,14 +48,14 @@ def getStaff():
 
 def getGrpId():
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-    print("正在读取公司员工")
+    print("正在读取群组名称")
     cursor = conn.cursor()
     sql = 'SELECT rid,groupname FROM wxwork_message.groupnote'
     cursor.execute(sql)
     r = cursor.fetchall()
     for i in r:
-        # Config.CP[i[0]] = i[1]
-        print("没有配置群字典")
+        Config.CP[i[0]] = i[1]
+        # print("没有配置群字典")
     conn.commit()
     cursor.close()
     conn.close()
@@ -73,6 +73,8 @@ def init():
         keywords = keywords.split("|")
         mlist.append(mdata(name, model, keywords))
     getUnUseMsg()
+    getStaff()
+    getGrpId()
     return True
 
 
