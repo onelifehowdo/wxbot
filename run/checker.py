@@ -81,7 +81,7 @@ class check(threading.Thread):
                         # print(r.text)
                 cursor.close()
                 conn.close()
-                time.sleep(60*5)
+                time.sleep(60*60)
             finally:
                 pass
         pass
