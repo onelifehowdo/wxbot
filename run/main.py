@@ -47,7 +47,7 @@ class EchoBot(wxwork.CallbackHandler):
     contraller=myTools.ctrl()
     @wxwork.RECV_CALLBACK(in_class=True)
     def on_message(self, client_id, message_type, message_data):
-        if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]):
+        if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]) and "R" in message_data["conversation_id"]:
             if message_type == MessageType.MT_RECV_TEXT_MSG:
                 # 如果是文本消息
                 # print("文本消息")

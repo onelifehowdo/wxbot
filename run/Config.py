@@ -1,11 +1,11 @@
 boring = []
-unusegrp = ["R:1075051383"]
+ignore = []
 CP = {}
 hz_all_staff = []
 staffList = []
 
 def ungrp(rid):
-    return not (rid in unusegrp)
+    return not (rid in ignore)
 
 
 def isStaff(id):

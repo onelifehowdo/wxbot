@@ -60,6 +60,19 @@ def getGrpId():
     cursor.close()
     conn.close()
 
+def getIgnoreGrp():
+    conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+    print("正在读取不需要处理的群")
+    cursor = conn.cursor()
+    sql = 'SELECT rid,cpname FROM wxwork_message.ignoreGrp;'
+    cursor.execute(sql)
+    r = cursor.fetchall()
+    for i in r:
+        Config.ignore.append(i[0])
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 
 def init():
     print("正在读取关键字")
@@ -73,6 +86,7 @@ def init():
         keywords = keywords.split("|")
         mlist.append(mdata(name, model, keywords))
     getUnUseMsg()
+    getIgnoreGrp()
     getStaff()
     getGrpId()
     return True
