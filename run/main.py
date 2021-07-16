@@ -15,8 +15,6 @@ import mysqlAll
 import Config
 
 wxwork_manager = WxWorkManager(libs_path='libs')
-sendList = ["nihao"]
-clientID = None
 
 
 # 这里测试函数回调
@@ -45,6 +43,7 @@ def on_close(client_id):
 class EchoBot(wxwork.CallbackHandler):
     canworklist = [11041, 11042, 11043, 11044, 11045]
     contraller=myTools.ctrl()
+    allMsgCtr=mysqlAll.sqliteControl()
     @wxwork.RECV_CALLBACK(in_class=True)
     def on_message(self, client_id, message_type, message_data):
         if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]) and "R" in message_data["conversation_id"]:
@@ -58,9 +57,9 @@ class EchoBot(wxwork.CallbackHandler):
                 speaker = message_data["sender_name"]
                 text = str(message_data["content"]).replace("\"", "")
                 mtime = int(message_data["send_time"])
-                print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
+                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
-                mysqlAll.sqliteControl().add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
+                self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
                 if "$$$" in text and Config.test_isHZstaff(speaker):
                     p = text.split("$$$")
                     m_name = p[0]
@@ -76,17 +75,17 @@ class EchoBot(wxwork.CallbackHandler):
                 speaker = message_data["sender_name"]
                 text = "文$件$消$息"
                 mtime = int(message_data["send_time"])
-                print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
+                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
-                mysqlAll.sqliteControl().add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
+                self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
 
 
 if __name__ == "__main__":
     if init.init():
         mysqlAll.sqliteControl().start()
         myTools.ctrl().start()
-        echoBot = EchoBot()
         checker.check().start()
+        echoBot = EchoBot()
 
     # 添加回调实例对象
     wxwork_manager.add_callback_handler(echoBot)

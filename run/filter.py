@@ -5,10 +5,14 @@ import re
 
 
 def cleanMsg(m_text):
+    print("清洗前的消息是：" + m_text)
     m_text = re.sub(r'.+\n.+\n-{6}\n', "", m_text)  # 去除引用
     m_text = re.sub(r'@\S+\b', "", m_text)  # 去除@
     m_text = re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\s|\'\"\‘\“', "", m_text)  # 去除符号
     m_text = re.sub(r'\d+', "", m_text)#去除数字
+    m_text = re.sub(r'\[[^\[\]]{1,4}\]', "", m_text)#去除表情
+
+    print("清洗后的消息是："+m_text)
     return m_text
 
 def filte(msg):

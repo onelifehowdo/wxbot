@@ -7,6 +7,18 @@ import init
 import filter
 
 
+class myPrint:
+    i = 0
+
+    @classmethod
+    def print(cls, s):
+        print(s)
+        cls.i += 1
+        cls.i = cls.i % 20
+        if cls.i == 10:
+            os.system("cls")
+
+
 class message:
     def __init__(self, cpName, id, speaker, text, time):
         self.cpName = cpName
@@ -20,12 +32,11 @@ class message:
 class ctrl(threading.Thread):
     messageList = []
     m_ctr = sqliteCtr.sqliteControl()
-    ins=None
+    ins = None
 
     def __new__(cls, *args, **kwargs):
         if cls.ins is None:
-            cls.m_ctr.start()
-            cls.ins=super().__new__(cls)
+            cls.ins = super().__new__(cls)
         return cls.ins
 
     def __init__(self):
@@ -38,21 +49,9 @@ class ctrl(threading.Thread):
     def run(cls):
         # 任务分配
         print("任务分配启动")
+        cls.m_ctr.start()
         while True:
             if len(cls.messageList) > 0:
                 r, msg = filter.filte(cls.messageList.pop(0))
                 if not r is None:
                     cls.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
-                # r,msg,name=filter().filt(cls.messageList.pop(0))
-                # if not r is None:
-                #     if r=="response":
-                #         m_ctrmsg = sqliteCtr.ctrMsg("response", r,msg,None)
-                #         cls.m_ctr.add(m_ctrmsg)
-                #     elif r=="solve":
-                #         m_ctrmsg = sqliteCtr.ctrMsg("solve", r,msg,None)
-                #         cls.m_ctr.add(m_ctrmsg)
-                #     else:
-                #         print("[%s:%s]:'%s'" % (msg.cpName, msg.speaker, msg.text))
-                #         print("[%s][%s]问题指派->%s" % (msg.cpName,r, name))
-                #         m_ctrmsg=sqliteCtr.ctrMsg("insert",r,msg,name)
-                #         cls.m_ctr.add(m_ctrmsg)

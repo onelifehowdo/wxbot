@@ -20,9 +20,11 @@ class sqliteControl(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
+    @classmethod
     def add(cls, i):
         cls.MsgQueue.append(i)
 
+    @classmethod
     def run(cls):
         while True:
             conn=pymysql.connect(host="120.26.54.146",user="wxwork_message",passwd="6CmnpPoS1jwIM%5g",db="wxwork_message")
