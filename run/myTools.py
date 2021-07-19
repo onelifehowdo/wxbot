@@ -14,7 +14,7 @@ class myPrint:
     def print(cls, s):
         print(s)
         cls.i += 1
-        cls.i = cls.i % 20
+        cls.i = cls.i % 500
         if cls.i == 10:
             os.system("cls")
 

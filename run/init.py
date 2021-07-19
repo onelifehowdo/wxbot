@@ -102,7 +102,7 @@ def getbean(msg):
             if j in msg:
                 model = i.model
                 name = i.name
-    else:
-        return model, name
+                return model, name
+    return model, name
 # init()
 # print(getbean("mqtt"))
