@@ -13,6 +13,7 @@ import checker
 import grpNaGet
 import mysqlAll
 import Config
+import loadData
 
 wxwork_manager = WxWorkManager(libs_path='libs')
 
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         myTools.ctrl().start()
         checker.check().start()
         echoBot = EchoBot()
+        loadData.Loading().start()
 
     # 添加回调实例对象
     wxwork_manager.add_callback_handler(echoBot)

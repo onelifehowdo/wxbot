@@ -18,26 +18,30 @@ class mdata:
         self.keyList = keyList
 
 
-def getUnUseMsg():
+def getUnUseMsg(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-    print("正在读取废话消息")
+    if F:
+        print("正在读取废话消息")
     cursor = conn.cursor()
     sql = 'SELECT message FROM boringmsg'
     cursor.execute(sql)
     r = cursor.fetchall()
+    Config.boring.clear()
     for i in r:
         Config.boring.append(i[0])
     conn.commit()
     cursor.close()
     conn.close()
 
-def getStaff():
+def getStaff(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-    print("正在读取公司员工")
+    if F:
+        print("正在读取公司员工")
     cursor = conn.cursor()
     sql = 'SELECT name , department FROM wxwork_message.staff'
     cursor.execute(sql)
     r = cursor.fetchall()
+    Config.hz_all_staff.clear()
     for i in r:
         Config.hz_all_staff.append(i[0])
         if i[1] == "应用研发部":
@@ -46,13 +50,15 @@ def getStaff():
     cursor.close()
     conn.close()
 
-def getGrpId():
+def getGrpId(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-    print("正在读取群组名称")
+    if F:
+        print("正在读取群组名称")
     cursor = conn.cursor()
     sql = 'SELECT rid,groupname FROM wxwork_message.groupnote'
     cursor.execute(sql)
     r = cursor.fetchall()
+    Config.CP.clear()
     for i in r:
         Config.CP[i[0]] = i[1]
         # print("没有配置群字典")
@@ -60,13 +66,15 @@ def getGrpId():
     cursor.close()
     conn.close()
 
-def getIgnoreGrp():
+def getIgnoreGrp(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-    print("正在读取不需要处理的群")
+    if F:
+        print("正在读取不需要处理的群")
     cursor = conn.cursor()
     sql = 'SELECT rid,cpname FROM wxwork_message.ignoreGrp;'
     cursor.execute(sql)
     r = cursor.fetchall()
+    Config.ignore.clear()
     for i in r:
         Config.ignore.append(i[0])
     conn.commit()
@@ -78,6 +86,7 @@ def init():
     print("正在读取关键字")
     xl = xlrd.open_workbook(r'keyword.xlsx')
     sheet = xl.sheet_by_index(0)
+    mlist.clear()
     for i in range(1, sheet.nrows):
         name = clean(str(sheet.cell(i, 0).value))
         model = clean(str(sheet.cell(i, 4).value))
