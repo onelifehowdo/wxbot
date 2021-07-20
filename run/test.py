@@ -2,16 +2,73 @@ import os
 import time
 import re
 import Config
+import pymysql
+from pymysql.converters import escape_string
 
-s = '[微笑][撇嘴][色][发呆][得意][流泪][害羞][闭嘴][睡][大哭][尴尬][发怒][调皮][呲牙][惊讶][难过][囧][抓狂][吐][偷笑][愉快][白眼][傲慢][困][惊恐][流汗][憨笑][悠闲][奋斗][' \
-    '咒骂][疑问][嘘][晕][衰][骷髅][敲打][再见][擦汗][抠鼻][鼓掌][坏笑][左哼哼][右哼哼][哈欠][鄙视][委屈][快哭了][阴险][亲亲][可怜][菜刀][西瓜][啤酒][咖啡][猪头][玫瑰][凋谢][' \
-    '嘴唇][爱心][心碎][蛋糕][炸弹][便便][月亮][太阳][拥抱][强][弱][握手][胜利][抱拳][勾引][拳头][OK][跳跳][发抖][怄火][转圈][嘿哈][捂脸][奸笑][机智][皱眉][耶][红包][發][' \
-    '小狗][吃瓜][加油][汗][天啊][Emm][社会社会][旺柴][好的][打脸][哇][福] '
-
-# print(Config.isBoring(""))
+# boring=[]
+# def getUnUseMsg():
+#     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+#     print("正在读取废话消息")
+#     cursor = conn.cursor()
+#     sql = 'SELECT message FROM boringmsg'
+#     cursor.execute(sql)
+#     r = cursor.fetchall()
+#     for i in r:
+#         boring.append(i[0])
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
 #
-# # lambda x:
+# def isBoring(text):
+#     if text == "":
+#         return True
+#     return text in boring
+#
+# def cleanMsg(m_text):
+#     print("清洗前的消息是：" + m_text)
+#     m_text = re.sub(r'.+\n.+\n-{6}\n', "", m_text)  # 去除引用
+#     m_text = re.sub(r'@\S+\b', "", m_text)  # 去除@
+#     m_text = re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\s|\'\"\‘\“', "", m_text)  # 去除符号
+#     m_text = re.sub(r'\d+', "", m_text)#去除数字
+#     m_text = re.sub(r'\[[^\[\]]{1,4}\]', "", m_text)#去除表情
+#
+#     print("清洗后的消息是："+m_text)
+#     return m_text
+#
+# def toboring(text):
+#     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+#     sql = 'INSERT INTO wxwork_message.boringmsg(message) values ("%s")'
+#     data = (text,)
+#     cursor = conn.cursor()
+#     cursor.execute(str.format(sql % data))
+#     conn.commit()
+#     cursor.close()
+#
+# if __name__ == "__main__":
+#     getUnUseMsg()
+#     while True:
+#         string = input("输入鉴定的文字：")
+#         string = cleanMsg(string)
+#         if isBoring(string):
+#             print("鉴定结果为：废话")
+#             input("回车键继续：")
+#             continue
+#         else:
+#             print("鉴定结果为：有用信息")
+#             print("是否添加废话？ Y/N")
+#             s=input("")
+#             if s=="Y" or s=="y":
+#                 string=escape_string(string)
+#                 toboring(string)
+#                 print("添加废话成功!")
 
-par = re.compile(r'\[[^\[\]]{1,4}\]')
-rsu = par.findall(s)
-print(rsu)
+conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+sql = 'SELECT *FROM wxwork_message.staff where rid is not NULL'
+cursor = conn.cursor()
+cursor.execute(sql)
+r = cursor.fetchall()
+for i in r:
+    print(i[1])
+conn.commit()
+cursor.close()
+conn.close()

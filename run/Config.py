@@ -4,6 +4,12 @@ CP = {}
 hz_all_staff = []
 staffList = []
 
+tempRid = []
+
+
+def tempisrid(rid):
+    return rid in tempRid
+
 
 def ungrp(rid):
     return not (rid in ignore)

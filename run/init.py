@@ -81,6 +81,18 @@ def getIgnoreGrp(F=True):
     cursor.close()
     conn.close()
 
+def getrid():
+    print("正在读取RID")
+    conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+    sql = 'SELECT *FROM wxwork_message.staff where rid is not NULL'
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    r = cursor.fetchall()
+    for i in r:
+        Config.tempRid.append(i[1])
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def init():
     print("正在读取关键字")
@@ -94,6 +106,7 @@ def init():
         keywords = keywords.strip("|")
         keywords = keywords.split("|")
         mlist.append(mdata(name, model, keywords))
+    getrid()
     getUnUseMsg()
     getIgnoreGrp()
     getStaff()

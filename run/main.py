@@ -61,7 +61,7 @@ class EchoBot(wxwork.CallbackHandler):
                 myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
                 self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
-                if "$$$" in text and Config.test_isHZstaff(speaker):
+                if "$$$" in text and (Config.test_isHZstaff(speaker) or Config.tempisrid(senderId)):
                     p = text.split("$$$")
                     m_name = p[0]
                     m_note = p[1]
