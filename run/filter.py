@@ -65,7 +65,7 @@ def filte(msg):
                     m_text = cleanMsg(m_text)
                     if not Config.isBoring(m_text):  # 有意义
                         sqlMsg = Message.sqlMessage(msg, "客户")
-                        Model, engineerName = init.getbean(m_text)
+                        Model, engineerName = init.getbean(msg.text)
                         if not Model == "another":
                             # 识别到关键字的消息
                             sqlMsg.setStatus(0)
@@ -87,7 +87,7 @@ def filte(msg):
             m_text = cleanMsg(m_text)
             if not Config.isBoring(m_text):  # 有意义
                 sqlMsg = Message.sqlMessage(msg, "客户")
-                Model, engineerName = init.getbean(m_text)
+                Model, engineerName = init.getbean(msg.text)
                 if not Model == "another":
                     # 识别到关键字的消息
                     sqlMsg.setStatus(0)
