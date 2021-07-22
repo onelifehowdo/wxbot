@@ -66,7 +66,7 @@ class check(threading.Thread):
                         "<font color=\"comment\">%s</font>\n" % time.strftime('%Y-%m-%d %H:%M', time.localtime()))
                     text = "# " + name + "\n" + text + "\n" + timeText
                     data = {"msgtype": "markdown", "markdown": {}}
-                    murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e6850cdf-a31a-48e5-bd46-2a7d92160af7"
+                    murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"
                     data["markdown"]["content"] = text
                     r = requests.post(url=murl, data=json.dumps(data))
             cursor.close()
