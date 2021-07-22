@@ -44,6 +44,12 @@ def filte(msg):
                                 sqlMsg.setModle(Model)
                                 sqlMsg.setEngineer(at['nickname'])
                                 msgType = "HAVE_KEY"
+            else:#无@回复
+                if "$_$" in msg.text:
+                    sqlMsg.setType("problem")
+                    sqlMsg.setEngineer(msg.speaker)  # 给自己
+                    # Model, engineerName = init.getbean(str(msg.text))
+                    sqlMsg.setModle(Model)
         else:  # 销售
             if len(msg.atList) > 0:  # @回复
                 for at in msg.atList:

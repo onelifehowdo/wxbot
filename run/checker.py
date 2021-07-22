@@ -17,6 +17,7 @@ class check(threading.Thread):
     def run(self) -> None:
         while True:
             try:
+                print("提醒"+time.strftime('%Y-%m-%d %H:%M', time.localtime()))
                 hz_at = {
                     "朱天华": "zhutianhua",
                     "孙志鹏": "sunzhipeng",
@@ -36,19 +37,20 @@ class check(threading.Thread):
                     "王磊": "wanglei",
                     "谢萧辉": "xiexiaohui",
                     "刘嘉诚": "liujiacheng",
-                    "黄何":"huanghe",
-                    "WHB":"whb",
-                    "石善振":"shishanzhen"
+                    "黄何": "huanghe",
+                    "WHB": "whb",
+                    "石善振": "shishanzhen"
                 }
                 #
-                murl="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"
+                murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"
 
-                conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+                conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
+                                       db="wxwork_message")
                 table = "msg"
 
                 cursor = conn.cursor()
                 for starf in Config.staffList:
-                    text=""
+                    text = ""
                     data = {
                         "msgtype": "text",
                         "text": {
@@ -56,24 +58,28 @@ class check(threading.Thread):
                             "mentioned_list": []
                         }
                     }
-                    sql=str.format('SELECT * FROM %s WHERE engineer="%s" and type="message" and status=0 GROUP BY cpid' % (table,starf))
-                    cursor.execute(sql)
-                    r=cursor.fetchall()
-                    if len(r) >0:
-                        text+=str.format("未响应消息群数:[%d]\n" %len(r))
-                        for i in r:
-                            text=text+i[2]+"\n"
-
-                    sql = str.format('SELECT * FROM %s WHERE engineer="%s" and type="problem" and status=0 GROUP BY cpid' % (table, starf))
+                    sql = str.format(
+                        'SELECT * FROM %s WHERE engineer="%s" and type="message" and status=0 GROUP BY cpid' % (
+                        table, starf))
                     cursor.execute(sql)
                     r = cursor.fetchall()
-                    if len(r)>0:
-                        text+="-"*49+"\n"
-                        text+=str.format("未解决问题群数:[%d]\n" % len(r))
+                    if len(r) > 0:
+                        text += str.format("未响应消息群数:[%d]\n" % len(r))
                         for i in r:
-                            text+=i[2]+"\n"
+                            text = text + i[2] + "\n"
 
-                    if text !="":
+                    sql = str.format(
+                        'SELECT * FROM %s WHERE engineer="%s" and type="problem" and status=0 GROUP BY cpid' % (
+                        table, starf))
+                    cursor.execute(sql)
+                    r = cursor.fetchall()
+                    if len(r) > 0:
+                        text += "-" * 49 + "\n"
+                        text += str.format("未解决问题群数:[%d]\n" % len(r))
+                        for i in r:
+                            text += i[2] + "\n"
+
+                    if text != "":
                         text += time.strftime('%Y-%m-%d %H:%M', time.localtime())
                         data["text"]["content"] = text
                         data["text"]["mentioned_list"].append(hz_at[starf])
@@ -81,7 +87,6 @@ class check(threading.Thread):
                         # print(r.text)
                 cursor.close()
                 conn.close()
-                time.sleep(60*60)
             finally:
                 pass
-        pass
+            time.sleep(60*60)
