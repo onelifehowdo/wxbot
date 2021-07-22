@@ -1,6 +1,7 @@
 import threading
 
 LOCK = threading.Lock()
+lock = threading.Lock()
 boring = []
 ignore = []
 CP = {}

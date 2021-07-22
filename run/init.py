@@ -33,6 +33,7 @@ def getUnUseMsg(F=True):
     cursor.close()
     conn.close()
 
+
 def getStaff(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
@@ -50,6 +51,7 @@ def getStaff(F=True):
     cursor.close()
     conn.close()
 
+
 def getGrpId(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
@@ -66,6 +68,7 @@ def getGrpId(F=True):
     cursor.close()
     conn.close()
 
+
 def getIgnoreGrp(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
@@ -81,6 +84,7 @@ def getIgnoreGrp(F=True):
     cursor.close()
     conn.close()
 
+
 def getrid():
     print("正在读取RID")
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
@@ -93,6 +97,7 @@ def getrid():
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def init():
     print("正在读取关键字")

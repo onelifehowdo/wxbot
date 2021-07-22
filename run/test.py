@@ -4,71 +4,63 @@ import re
 import Config
 import pymysql
 from pymysql.converters import escape_string
+import requests
+import json
+import threading
+import init
 
-# boring=[]
-# def getUnUseMsg():
-#     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-#     print("正在读取废话消息")
-#     cursor = conn.cursor()
-#     sql = 'SELECT message FROM boringmsg'
-#     cursor.execute(sql)
-#     r = cursor.fetchall()
-#     for i in r:
-#         boring.append(i[0])
-#     conn.commit()
-#     cursor.close()
-#     conn.close()
-#
-# def isBoring(text):
-#     if text == "":
-#         return True
-#     return text in boring
-#
-# def cleanMsg(m_text):
-#     print("清洗前的消息是：" + m_text)
-#     m_text = re.sub(r'.+\n.+\n-{6}\n', "", m_text)  # 去除引用
-#     m_text = re.sub(r'@\S+\b', "", m_text)  # 去除@
-#     m_text = re.sub(r'，|,|。|\.|、|!|！|？|\?|;|；|=|\s|\'\"\‘\“', "", m_text)  # 去除符号
-#     m_text = re.sub(r'\d+', "", m_text)#去除数字
-#     m_text = re.sub(r'\[[^\[\]]{1,4}\]', "", m_text)#去除表情
-#
-#     print("清洗后的消息是："+m_text)
-#     return m_text
-#
-# def toboring(text):
-#     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-#     sql = 'INSERT INTO wxwork_message.boringmsg(message) values ("%s")'
-#     data = (text,)
-#     cursor = conn.cursor()
-#     cursor.execute(str.format(sql % data))
-#     conn.commit()
-#     cursor.close()
-#
-# if __name__ == "__main__":
-#     getUnUseMsg()
-#     while True:
-#         string = input("输入鉴定的文字：")
-#         string = cleanMsg(string)
-#         if isBoring(string):
-#             print("鉴定结果为：废话")
-#             input("回车键继续：")
-#             continue
-#         else:
-#             print("鉴定结果为：有用信息")
-#             print("是否添加废话？ Y/N")
-#             s=input("")
-#             if s=="Y" or s=="y":
-#                 string=escape_string(string)
-#                 toboring(string)
-#                 print("添加废话成功!")
 
+def makeText(cursor, name):
+    msgNum = 0
+    msg = ""
+    proNum = 0
+    pro = ""
+    sql = str.format(
+        'SELECT cpname FROM wxwork_message.msg WHERE engineer="%s" and type="message" and status=0 GROUP BY cpid' % name)
+    cursor.execute(sql)
+    msgList = cursor.fetchall()
+    sql = str.format(
+        'SELECT cpname FROM wxwork_message.msg WHERE engineer="%s" and type="problem" and status=0 GROUP BY cpid' % name)
+    cursor.execute(sql)
+    proList = cursor.fetchall()
+
+    if len(msgList) != 0:
+        msgNum = len(msgList)
+        mList = ["> " + i[0] + "\n" for i in msgList]
+        for i in mList:
+            msg += i
+
+    if len(proList) != 0:
+        proNum = len(proList)
+        mList = ["> " + i[0] + "\n" for i in proList]
+        for i in mList:
+            pro += i
+
+    if msgNum != 0:
+        msg = str.format("**未响应消息群数[%d]**\n%s\n" % (msgNum, msg))
+    if proNum != 0:
+        pro = str.format("**未解决问题群数[%d]**\n%s" % (proNum, pro))
+    flag = not (msgNum == 0 and proNum == 0)
+    text = msg + pro
+    return flag, text
+
+init.init()
 conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
-sql = 'SELECT *FROM wxwork_message.staff where rid is not NULL'
 cursor = conn.cursor()
-cursor.execute(sql)
-r = cursor.fetchall()
-for i in r:
-    print(i[1])
-conn.commit()
+for name in Config.staffList:
+    try:
+        r, text = makeText(cursor, name)
+    except Exception as e:
+        continue
+    finally:
+        pass
+    if r:
+        timeText=str.format("<font color=\"comment\">%s</font>\n" % time.strftime('%Y-%m-%d %H:%M', time.localtime()))
+        text = "# "+name+"\n" + text+"\n"+timeText
+        data = {"msgtype": "markdown", "markdown": {}}
+        murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e6850cdf-a31a-48e5-bd46-2a7d92160af7"
+        data["markdown"]["content"] = text
+        r = requests.post(url=murl, data=json.dumps(data))
+        print(r.text)
 cursor.close()
 conn.close()

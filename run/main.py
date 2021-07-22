@@ -13,7 +13,7 @@ import checker
 import grpNaGet
 import mysqlAll
 import Config
-import loadData
+# import loadData
 
 wxwork_manager = WxWorkManager(libs_path='libs')
 

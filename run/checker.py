@@ -10,83 +10,65 @@ import threading
 import requests
 
 
+def makeText(cursor, name):
+    msgNum = 0
+    msg = ""
+    proNum = 0
+    pro = ""
+    sql = str.format(
+        'SELECT cpname FROM wxwork_message.msg WHERE engineer="%s" and type="message" and status=0 GROUP BY cpid' % name)
+    cursor.execute(sql)
+    msgList = cursor.fetchall()
+    sql = str.format(
+        'SELECT cpname FROM wxwork_message.msg WHERE engineer="%s" and type="problem" and status=0 GROUP BY cpid' % name)
+    cursor.execute(sql)
+    proList = cursor.fetchall()
+
+    if len(msgList) != 0:
+        msgNum = len(msgList)
+        mList = ["> " + i[0] + "\n" for i in msgList]
+        for i in mList:
+            msg += i
+
+    if len(proList) != 0:
+        proNum = len(proList)
+        mList = ["> " + i[0] + "\n" for i in proList]
+        for i in mList:
+            pro += i
+
+    if msgNum != 0:
+        msg = str.format("**未响应消息群数[%d]**\n%s\n" % (msgNum, msg))
+    if proNum != 0:
+        pro = str.format("**未解决问题群数[%d]**\n%s" % (proNum, pro))
+    flag = not (msgNum == 0 and proNum == 0)
+    text = msg + pro
+    return flag, text
+
+
 class check(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
     def run(self) -> None:
         while True:
-            try:
-                print("提醒"+time.strftime('%Y-%m-%d %H:%M', time.localtime()))
-                hz_at = {
-                    "朱天华": "zhutianhua",
-                    "孙志鹏": "sunzhipeng",
-                    "盛玉霞": "shengxia",
-                    "沈园园": "shenyuanyuan",
-                    "祝平军": "zhupingjun",
-                    "王海洋": "wanghaiyang",
-                    "曲振": "quzhen",
-                    "邓海": "denghai",
-                    "谭立元": "tanliyuan",
-                    "郑治": "zhengzhi",
-                    "廖瑞": "liaorui",
-                    "周维华": "zhouweihua",
-                    "孙张鑫": "sunzhangxin",
-                    "小助理": "xiaozhushou",
-                    "伍珈沁": "wujiaqin",
-                    "王磊": "wanglei",
-                    "谢萧辉": "xiexiaohui",
-                    "刘嘉诚": "liujiacheng",
-                    "黄何": "huanghe",
-                    "WHB": "whb",
-                    "石善振": "shishanzhen"
-                }
-                #
-                murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"
-
-                conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
-                                       db="wxwork_message")
-                table = "msg"
-
-                cursor = conn.cursor()
-                for starf in Config.staffList:
-                    text = ""
-                    data = {
-                        "msgtype": "text",
-                        "text": {
-                            "content": "",
-                            "mentioned_list": []
-                        }
-                    }
-                    sql = str.format(
-                        'SELECT * FROM %s WHERE engineer="%s" and type="message" and status=0 GROUP BY cpid' % (
-                        table, starf))
-                    cursor.execute(sql)
-                    r = cursor.fetchall()
-                    if len(r) > 0:
-                        text += str.format("未响应消息群数:[%d]\n" % len(r))
-                        for i in r:
-                            text = text + i[2] + "\n"
-
-                    sql = str.format(
-                        'SELECT * FROM %s WHERE engineer="%s" and type="problem" and status=0 GROUP BY cpid' % (
-                        table, starf))
-                    cursor.execute(sql)
-                    r = cursor.fetchall()
-                    if len(r) > 0:
-                        text += "-" * 49 + "\n"
-                        text += str.format("未解决问题群数:[%d]\n" % len(r))
-                        for i in r:
-                            text += i[2] + "\n"
-
-                    if text != "":
-                        text += time.strftime('%Y-%m-%d %H:%M', time.localtime())
-                        data["text"]["content"] = text
-                        data["text"]["mentioned_list"].append(hz_at[starf])
-                        r = requests.post(url=murl, data=json.dumps(data))
-                        # print(r.text)
-                cursor.close()
-                conn.close()
-            finally:
-                pass
-            time.sleep(60*60)
+            conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
+                                   db="wxwork_message")
+            cursor = conn.cursor()
+            for name in Config.staffList:
+                try:
+                    r, text = makeText(cursor, name)
+                except Exception as e:
+                    continue
+                finally:
+                    pass
+                if r:
+                    timeText = str.format(
+                        "<font color=\"comment\">%s</font>\n" % time.strftime('%Y-%m-%d %H:%M', time.localtime()))
+                    text = "# " + name + "\n" + text + "\n" + timeText
+                    data = {"msgtype": "markdown", "markdown": {}}
+                    murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e6850cdf-a31a-48e5-bd46-2a7d92160af7"
+                    data["markdown"]["content"] = text
+                    r = requests.post(url=murl, data=json.dumps(data))
+            cursor.close()
+            conn.close()
+            time.sleep(60 * 60)
