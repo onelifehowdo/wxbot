@@ -51,7 +51,8 @@ class ctrl(threading.Thread):
         print("任务分配启动")
         cls.m_ctr.start()
         while True:
-            if len(cls.messageList) > 0:
-                r, msg = filter.filte(cls.messageList.pop(0))
-                if not r is None:
-                    cls.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
+            with Config.LOCK:
+                if len(cls.messageList) > 0:
+                    r, msg = filter.filte(cls.messageList.pop(0))
+                    if not r is None:
+                        cls.m_ctr.add(sqliteCtr.ctrMsg(r, msg))

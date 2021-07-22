@@ -1,3 +1,6 @@
+import threading
+
+LOCK = threading.Lock()
 boring = []
 ignore = []
 CP = {}
