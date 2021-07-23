@@ -51,24 +51,25 @@ class check(threading.Thread):
 
     def run(self) -> None:
         while True:
-            conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
-                                   db="wxwork_message")
-            cursor = conn.cursor()
-            for name in Config.staffList:
-                try:
-                    r, text = makeText(cursor, name)
-                except Exception as e:
-                    continue
-                finally:
-                    pass
-                if r:
-                    timeText = str.format(
-                        "<font color=\"comment\">%s</font>\n" % time.strftime('%Y-%m-%d %H:%M', time.localtime()))
-                    text = "# " + name + "\n" + text + "\n" + timeText
-                    data = {"msgtype": "markdown", "markdown": {}}
-                    murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"
-                    data["markdown"]["content"] = text
-                    r = requests.post(url=murl, data=json.dumps(data))
-            cursor.close()
-            conn.close()
+            with Config.LOCK:
+                conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
+                                       db="wxwork_message")
+                cursor = conn.cursor()
+                for name in Config.staffList:
+                    try:
+                        r, text = makeText(cursor, name)
+                    except Exception as e:
+                        continue
+                    finally:
+                        pass
+                    if r:
+                        timeText = str.format(
+                            "<font color=\"comment\">%s</font>\n" % time.strftime('%Y-%m-%d %H:%M', time.localtime()))
+                        text = "# " + name + "\n" + text + "\n" + timeText
+                        data = {"msgtype": "markdown", "markdown": {}}
+                        murl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b8acdfc2-45eb-41d8-8a09-e2162e21477b"
+                        data["markdown"]["content"] = text
+                        r = requests.post(url=murl, data=json.dumps(data))
+                cursor.close()
+                conn.close()
             time.sleep(60 * 60)
