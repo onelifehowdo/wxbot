@@ -44,7 +44,7 @@ def filte(msg):
                                 sqlMsg.speakerType = "应用研发部"
                                 sqlMsg.setModle(Model)
                                 sqlMsg.setEngineer(at['nickname'])
-                                msgType = "HAVE_KEY"
+                                msgType = "TRANSFER"
             else:#无@回复
                 if "$_$" in msg.text:
                     sqlMsg.setType("problem")

@@ -86,6 +86,21 @@ class sqliteControl(threading.Thread):
                             conn.commit()
                             cursor.close()
                             cls.rsp[cpName] = False
+                        elif ctr == "TRANSFER":
+                            print("消息转移")
+                            cursor = conn.cursor()
+                            sql = 'UPDATE %s SET processor="%s" ,status=1 ,endtime=%d WHERE cpid="%s" and type="message" and status=0'
+                            data = (tableName, speaker, time, cpId)
+                            cursor.execute(str.format(sql % data))
+                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
+                            data = (
+                                tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
+                                engineer,
+                                status, person)
+                            cursor.execute(str.format(sql % data))
+                            conn.commit()
+                            cursor.close()
+                            cls.rsp[cpName] = False
                         elif ctr == "STAFF":
                             if type == "message":
                                 cursor = conn.cursor()
