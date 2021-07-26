@@ -15,7 +15,8 @@ def cleanMsg(m_text):
 def filte(msg):
     msgType = None
     sqlMsg = None
-    r = Config.test_isHZstaff(msg.speaker)
+    # r = Config.test_isHZstaff(msg.speaker)
+    r = Config.tempisrid(msg.speakid)
     if r:  # 公司员工
         msgType = "STAFF"
         sqlMsg = Message.sqlMessage(msg, "应用研发部")

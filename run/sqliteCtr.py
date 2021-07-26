@@ -97,8 +97,8 @@ class sqliteControl(threading.Thread):
                                 print("[%s]响应" % speaker)
                             elif type == "problem":
                                 cursor = conn.cursor()
-                                sql = 'UPDATE %s SET processor="%s" ,status=1 WHERE cpid="%s" and type="message" and status=0'
-                                data = (tableName, speaker, cpId)
+                                sql = 'UPDATE %s SET processor="%s" ,status=1 ,endtime=%d WHERE cpid="%s" and type="message" and status=0'
+                                data = (tableName, speaker, time, cpId)
                                 cursor.execute(str.format(sql % data))
                                 sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
                                 data = (

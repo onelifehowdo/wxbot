@@ -43,6 +43,7 @@ def getStaff(F=True):
     cursor.execute(sql)
     r = cursor.fetchall()
     Config.hz_all_staff.clear()
+    Config.staffList.clear()
     for i in r:
         Config.hz_all_staff.append(i[0])
         if i[1] == "应用研发部":
