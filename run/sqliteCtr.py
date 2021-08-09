@@ -87,7 +87,7 @@ class sqliteControl(threading.Thread):
                             cursor.close()
                             cls.rsp[cpName] = False
                         elif ctr == "TRANSFER":
-                            print("消息转移")
+                            # print("消息转移")
                             cursor = conn.cursor()
                             sql = 'UPDATE %s SET processor="%s" ,status=1 ,endtime=%d WHERE cpid="%s" and type="message" and status=0'
                             data = (tableName, speaker, time, cpId)

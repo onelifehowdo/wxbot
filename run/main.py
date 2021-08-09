@@ -50,7 +50,10 @@ class EchoBot(wxwork.CallbackHandler):
         if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]) and "R" in message_data["conversation_id"]:
             if message_type == MessageType.MT_RECV_TEXT_MSG:
                 # 如果是文本消息
-                # print("文本消息")
+                print("文本消息")
+                print(message_type)
+                print(message_data)
+                print("-"*30)
                 atList = message_data["at_list"]
                 cpId = message_data["conversation_id"]
                 cpName = Config.getCpname(cpId)
