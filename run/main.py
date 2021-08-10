@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 import wxwork
 import json
@@ -14,8 +15,11 @@ import grpNaGet
 import mysqlAll
 import Config
 import loadData
+import os
 
 wxwork_manager = WxWorkManager(libs_path='libs')
+# wxwork_manager = None
+echoBot = None
 
 
 # 这里测试函数回调
@@ -39,21 +43,26 @@ def on_recv(client_id, message_type, message_data):
 @wxwork.CLOSE_CALLBACK(in_class=False)
 def on_close(client_id):
     print('[on_close] client_id: {0}'.format(client_id))
+    # wxwork_manager.add_callback_handler(echoBot)
+
 
 
 class EchoBot(wxwork.CallbackHandler):
     canworklist = [11041, 11042, 11043, 11044, 11045]
-    contraller=myTools.ctrl()
-    allMsgCtr=mysqlAll.sqliteControl()
+    contraller = myTools.ctrl()
+    allMsgCtr = mysqlAll.sqliteControl()
+
     @wxwork.RECV_CALLBACK(in_class=True)
     def on_message(self, client_id, message_type, message_data):
-        if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]) and "R" in message_data["conversation_id"]:
+        if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]) and "R" in message_data[
+            "conversation_id"] and ("at_list" in message_data.keys()):
             if message_type == MessageType.MT_RECV_TEXT_MSG:
                 # 如果是文本消息
-                print("文本消息")
-                print(message_type)
-                print(message_data)
-                print("-"*30)
+                # print("-" * 30)
+                # print("文本消息")
+                # # print(message_type)
+                # print(message_data)
+                # print("-" * 30)
                 atList = message_data["at_list"]
                 cpId = message_data["conversation_id"]
                 cpName = Config.getCpname(cpId)
@@ -61,7 +70,8 @@ class EchoBot(wxwork.CallbackHandler):
                 speaker = message_data["sender_name"]
                 text = str(message_data["content"]).replace("\"", "")
                 mtime = int(message_data["send_time"])
-                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
+                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M',
+                                                          time.localtime()) + "]" + cpName + "--" + speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
                 self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
                 if "$$$" in text and (Config.test_isHZstaff(speaker) or Config.tempisrid(senderId)):
@@ -79,23 +89,52 @@ class EchoBot(wxwork.CallbackHandler):
                 speaker = message_data["sender_name"]
                 text = "文$件$消$息"
                 mtime = int(message_data["send_time"])
-                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M', time.localtime()) + "]" +cpName+"--"+ speaker + ":" + text)
+                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M',
+                                                          time.localtime()) + "]" + cpName + "--" + speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
                 self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
 
 
 if __name__ == "__main__":
-    if init.init():
-        mysqlAll.sqliteControl().start()
-        myTools.ctrl().start()
-        checker.check().start()
-        echoBot = EchoBot()
-        loadData.Loading().start()
 
-    # 添加回调实例对象
-    wxwork_manager.add_callback_handler(echoBot)
-    wxwork_manager.manager_wxwork(smart=True)
+    allMessage = mysqlAll.sqliteControl()
+    filter = myTools.ctrl()
+    loader = loadData.Loading()
+    check = checker.check()
+    SysFlag = True
+    while True:  # 循环重启
+        if myTools.WXSTU.ping():
+            if init.init():
+                if not allMessage.is_alive():
+                    allMessage.start()
+                if not filter.is_alive():
+                    filter.start()
+                if not loader.is_alive():
+                    loader.start()
+                # if not check.is_alive():
+                #     check.start()
+                if echoBot is None:
+                    echoBot = EchoBot()
+                    wxwork_manager.add_callback_handler(echoBot)
+                    # 添加回调实例对象
 
-    # 阻塞主线程
-    while True:
-        time.sleep(0.5)
+                # wxwork_manager.add_callback_handler(echoBot)
+                wxwork_manager.manager_wxwork(smart=True)
+
+                # 阻塞主线程
+                while True:
+                    SysFlag = (
+                                allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping())
+                    if SysFlag:  # 系统无状况
+                        pass
+                    else:  # 系统掉线
+                        print("-----------掉线")
+                        if myTools.WXSTU.getStatus():
+                            if myTools.WXSTU.shutWX():
+                                print("关闭微信成功")
+                        break
+                        pass
+                    time.sleep(0.5)
+        else:
+            print("网络掉线")
+            time.sleep(5)

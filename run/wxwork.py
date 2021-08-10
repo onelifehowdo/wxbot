@@ -85,7 +85,7 @@ def CLOSE_CALLBACK(in_class=False):
 
 def add_callback_handler(callbackHandler):
     for dummy, handler in inspect.getmembers(callbackHandler, callable): 
-        if hasattr(handler, '_wx_connect_handled'):          
+        if hasattr(handler, '_wx_connect_handled'):
             _GLOBAL_CONNECT_CALLBACK_LIST.append(handler)
         elif hasattr(handler, '_wx_recv_handled'):
             _GLOBAL_RECV_CALLBACK_LIST.append(handler)

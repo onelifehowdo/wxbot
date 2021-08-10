@@ -27,6 +27,28 @@ class message:
         self.text = text
         self.time = time
 
+class WXSTU:
+    @classmethod
+    def getStatus(cls):
+        cmd = 'tasklist'
+        res = os.popen(cmd)
+        output_str = res.read()  # 获得输出字符串
+        return True if ("WXWork.exe" in output_str) else False
+
+    @classmethod
+    def shutWX(cls):
+        cmd = 'taskkill /f /t /im WXWork.exe'
+        res = os.popen(cmd)
+        output_str = res.read()  # 获得输出字符串
+        return True if ("成功" in output_str) else False
+
+    @classmethod
+    def ping(cls):
+        cmd = 'ping -n 1 www.tencent.com'
+        res = os.popen(cmd)
+        output_str = res.read()  # 获得输出字符串
+        return True if ("已发送" in output_str) else False
+
 
 # 任务分配线程
 class ctrl(threading.Thread):
