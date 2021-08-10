@@ -19,7 +19,7 @@ import os
 
 wxwork_manager = WxWorkManager(libs_path='libs')
 # wxwork_manager = None
-echoBot = None
+
 
 
 # 这里测试函数回调
@@ -97,43 +97,53 @@ class EchoBot(wxwork.CallbackHandler):
 
 if __name__ == "__main__":
 
-    allMessage = mysqlAll.sqliteControl()
-    filter = myTools.ctrl()
-    loader = loadData.Loading()
-    check = checker.check()
+    echoBot = None
+    allMessage = None
+    filter = None
+    loader = None
+    check = None
     SysFlag = True
     while True:  # 循环重启
         if myTools.WXSTU.ping():
             if init.init():
-                if not allMessage.is_alive():
+                if allMessage is None:
+                    allMessage = mysqlAll.sqliteControl()
                     allMessage.start()
-                if not filter.is_alive():
+                if filter is None:
+                    filter = myTools.ctrl()
                     filter.start()
-                if not loader.is_alive():
+                if loader is None:
+                    loader = loadData.Loading()
                     loader.start()
-                # if not check.is_alive():
-                #     check.start()
+                if check is None:
+                    check = checker.check()
+                    check.start()
                 if echoBot is None:
                     echoBot = EchoBot()
                     wxwork_manager.add_callback_handler(echoBot)
                     # 添加回调实例对象
 
-                # wxwork_manager.add_callback_handler(echoBot)
                 wxwork_manager.manager_wxwork(smart=True)
 
                 # 阻塞主线程
                 while True:
-                    SysFlag = (
-                                allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping())
+                    SysFlag = (myTools.WXSTU.ping()
+                                # allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping()\
+                               )
                     if SysFlag:  # 系统无状况
+                        print(allMessage.is_alive(), "ALL")
                         pass
                     else:  # 系统掉线
                         print("-----------掉线")
                         if myTools.WXSTU.getStatus():
                             if myTools.WXSTU.shutWX():
                                 print("关闭微信成功")
+
+                        allMessage = None
+                        filter = None
+                        loader = None
+                        check = None
                         break
-                        pass
                     time.sleep(0.5)
         else:
             print("网络掉线")
