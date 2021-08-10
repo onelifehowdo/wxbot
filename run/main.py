@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import threading
 
 import wxwork
 import json
@@ -18,8 +19,9 @@ import loadData
 import os
 
 wxwork_manager = WxWorkManager(libs_path='libs')
-# wxwork_manager = None
 
+
+# wxwork_manager = None
 
 
 # 这里测试函数回调
@@ -44,7 +46,6 @@ def on_recv(client_id, message_type, message_data):
 def on_close(client_id):
     print('[on_close] client_id: {0}'.format(client_id))
     # wxwork_manager.add_callback_handler(echoBot)
-
 
 
 class EchoBot(wxwork.CallbackHandler):
@@ -103,20 +104,26 @@ if __name__ == "__main__":
     loader = None
     check = None
     SysFlag = True
+
     while True:  # 循环重启
-        if myTools.WXSTU.ping():
+        Config.EVENTFLAG.clear()
+        if myTools.WXSTU.ping() and myTools.WXSTU.DBCanLink():
             if init.init():
                 if allMessage is None:
                     allMessage = mysqlAll.sqliteControl()
+                    allMessage.setName("全部消息线程")
                     allMessage.start()
                 if filter is None:
                     filter = myTools.ctrl()
+                    filter.setName("过滤线程")
                     filter.start()
                 if loader is None:
                     loader = loadData.Loading()
+                    loader.setName("动态加载线程")
                     loader.start()
                 if check is None:
                     check = checker.check()
+                    check.setName("提醒线程")
                     check.start()
                 if echoBot is None:
                     echoBot = EchoBot()
@@ -127,11 +134,10 @@ if __name__ == "__main__":
 
                 # 阻塞主线程
                 while True:
-                    SysFlag = (myTools.WXSTU.ping()
-                                # allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping()\
-                               )
+                    # print("----ThreadCount:", len(threading.enumerate()), threading.enumerate())
+                    SysFlag = (
+                                allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping())
                     if SysFlag:  # 系统无状况
-                        print(allMessage.is_alive(), "ALL")
                         pass
                     else:  # 系统掉线
                         print("-----------掉线")
@@ -139,6 +145,11 @@ if __name__ == "__main__":
                             if myTools.WXSTU.shutWX():
                                 print("关闭微信成功")
 
+                        Config.EVENTFLAG.set()
+                        allMessage.join()
+                        filter.join()
+                        loader.join()
+                        check.join()
                         allMessage = None
                         filter = None
                         loader = None
@@ -146,5 +157,7 @@ if __name__ == "__main__":
                         break
                     time.sleep(0.5)
         else:
+            Config.EVENTFLAG.set()
             print("网络掉线")
-            time.sleep(5)
+            # print("----DDDThreadCount:", len(threading.enumerate()), threading.enumerate())
+            time.sleep(20)

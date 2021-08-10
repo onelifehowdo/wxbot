@@ -34,6 +34,8 @@ class sqliteControl(threading.Thread):
             print("消息数据库打开成功")
             try:
                 while True:
+                    if Config.EVENTFLAG.is_set():
+                        raise Exception(cls.name + "主动退出")
                     if len(cls.MsgQueue) > 0:
                         conn.ping()
                         mCtrMsg = cls.MsgQueue.pop(0)

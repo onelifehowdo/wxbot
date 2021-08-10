@@ -1,5 +1,6 @@
 import threading
 
+EVENTFLAG=threading.Event()
 LOCK = threading.Lock()
 lock = threading.Lock()
 boring = []

@@ -8,7 +8,10 @@ class Loading(threading.Thread):
     def run(self) -> None:
         try:
             while True:
-                time.sleep(60*5)
+                for i in range(60*5):
+                    if Config.EVENTFLAG.is_set():
+                        raise Exception(self.name + "主动退出")
+                    time.sleep(1)
                 with Config.LOCK:
                     init.getUnUseMsg(F=False)
                     init.getIgnoreGrp(F=False)

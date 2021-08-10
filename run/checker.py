@@ -72,4 +72,7 @@ class check(threading.Thread):
                         r = requests.post(url=murl, data=json.dumps(data))
                 cursor.close()
                 conn.close()
-            time.sleep(60 * 60)
+            for i in range(60 * 60):
+                if Config.EVENTFLAG.is_set():
+                    raise Exception(self.name + "主动退出")
+                time.sleep(1)

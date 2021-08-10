@@ -1,6 +1,9 @@
 import os
 import threading
 import time
+
+import pymysql
+
 import sqliteCtr
 import Config
 import init
@@ -49,11 +52,23 @@ class WXSTU:
         output_str = res.read()  # 获得输出字符串
         return True if ("已发送" in output_str) else False
 
+    @classmethod
+    def DBCanLink(cls):
+        conn = None
+        flag = True
+        try:
+            conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
+                                   db="wxwork_message", connect_timeout=2)
+        except Exception:
+            flag = False
+        finally:
+            if not conn is None:
+                conn.close()
+            return flag
 
 # 任务分配线程
 class ctrl(threading.Thread):
     messageList = []
-    m_ctr = sqliteCtr.sqliteControl()
     ins = None
 
     def __new__(cls, *args, **kwargs):
@@ -63,18 +78,23 @@ class ctrl(threading.Thread):
 
     def __init__(self):
         self.id = id
+        self.m_ctr = sqliteCtr.sqliteControl()
+        self.m_ctr.setName("message Thread")
         threading.Thread.__init__(self)
-
+    @classmethod
     def addMessage(cls, msg):
         cls.messageList.append(msg)
 
-    def run(cls):
+    def run(self):
         # 任务分配
         print("任务分配启动")
-        cls.m_ctr.start()
+        self.m_ctr.start()
         while True:
+            if Config.EVENTFLAG.is_set():
+                self.m_ctr.join()
+                raise Exception(self.name + "主动退出")
             with Config.LOCK:
-                if len(cls.messageList) > 0:
-                    r, msg = filter.filte(cls.messageList.pop(0))
+                if len(self.messageList) > 0:
+                    r, msg = filter.filte(self.messageList.pop(0))
                     if not r is None:
-                        cls.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
+                        self.m_ctr.add(sqliteCtr.ctrMsg(r, msg))

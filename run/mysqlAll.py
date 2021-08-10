@@ -5,6 +5,7 @@ import pymysql
 import string
 import time
 import threading
+import  Config
 
 class ctrMsg:
     def __init__(self,ctr,msg):
@@ -27,11 +28,15 @@ class sqliteControl(threading.Thread):
     @classmethod
     def run(cls):
         while True:
+            if Config.EVENTFLAG.is_set():
+                break
             conn=pymysql.connect(host="120.26.54.146",user="wxwork_message",passwd="6CmnpPoS1jwIM%5g",db="wxwork_message")
             tableName="ALLmessage"
             print("全部消息数据库打开成功")
             try:
                 while True:
+                    if Config.EVENTFLAG.is_set():
+                        raise Exception("全部消息线程"+ "主动退出")
                     if len(cls.MsgQueue) > 0:
                         conn.ping()
                         Q_msg = cls.MsgQueue.pop(0)
@@ -52,7 +57,7 @@ class sqliteControl(threading.Thread):
 
             except Exception as e:
                 # conn.rollback()
-                # logging.getLogger("sql").error(traceback.format_exc())
+                logging.getLogger("sql").error(traceback.format_exc())
                 print("全部消息数据库断联")
                 continue
                 pass
