@@ -49,7 +49,7 @@ def test_isHZstaff(text):
 
 
 def isWorkTime(mt):
-    mt=time.localtime(mt)
+    mt = time.localtime(mt)
     todayWork = False
     WEEK = int(time.strftime('%w', mt))
     DATE = time.strftime('%Y-%m-%d', mt)
