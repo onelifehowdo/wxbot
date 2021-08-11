@@ -57,11 +57,11 @@ class sqliteControl(threading.Thread):
 
                         if ctr == "HAVE_KEY":
                             cursor = conn.cursor()
-                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
+                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor,workTime) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s",%d)'
                             data = (
                                 tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
                                 engineer,
-                                status, person)
+                                status, person,Config.isWorkTime(time))
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
@@ -79,11 +79,11 @@ class sqliteControl(threading.Thread):
                             else:
                                 engineer = "盛玉霞"
 
-                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
+                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor,workTime) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s",%d)'
                             data = (
                                 tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
                                 engineer,
-                                status, person)
+                                status, person,Config.isWorkTime(time))
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
@@ -94,11 +94,11 @@ class sqliteControl(threading.Thread):
                             sql = 'UPDATE %s SET processor="%s" ,status=1 ,endtime=%d WHERE cpid="%s" and type="message" and status=0'
                             data = (tableName, speaker, time, cpId)
                             cursor.execute(str.format(sql % data))
-                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
+                            sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor,workTime) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s",%d)'
                             data = (
                                 tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
                                 engineer,
-                                status, person)
+                                status, person,Config.isWorkTime(time))
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
@@ -117,10 +117,10 @@ class sqliteControl(threading.Thread):
                                 sql = 'UPDATE %s SET processor="%s" ,status=1 ,endtime=%d WHERE cpid="%s" and type="message" and status=0'
                                 data = (tableName, speaker, time, cpId)
                                 cursor.execute(str.format(sql % data))
-                                sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s")'
+                                sql = 'INSERT INTO %s(cpid,cpname,speakerid,speaker,text,speakertype,type,time,model,engineer,status,processor,workTime) values ("%s","%s","%s","%s","%s","%s","%s",%d,"%s","%s",%d,"%s",%d)'
                                 data = (
                                     tableName, cpId, cpName, speakerId, speaker, text, speakerType, type, time, model,
-                                    engineer, status, person)
+                                    engineer, status, person,Config.isWorkTime(time))
                                 cursor.execute(str.format(sql % data))
                                 conn.commit()
                                 cursor.close()
