@@ -18,6 +18,26 @@ class mdata:
         self.keyList = keyList
 
 
+def getWorkDay(F=True):
+    conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+    if F:
+        print("正在读取工作日配置")
+    cursor = conn.cursor()
+    sql = 'SELECT * FROM wxwork_message.workdate;'
+    cursor.execute(sql)
+    r = cursor.fetchall()
+    Config.workDay.clear()
+    Config.holiday.clear()
+    for i in r:
+        if i[2] == 0:
+            Config.holiday.append(i[1])
+        else:
+            Config.workDay.append(i[1])
+    else:
+        cursor.close()
+        conn.close()
+
+
 def getUnUseMsg(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
@@ -112,6 +132,7 @@ def init():
         keywords = keywords.strip("|")
         keywords = keywords.split("|")
         mlist.append(mdata(name, model, keywords))
+    getWorkDay()
     getrid()
     getUnUseMsg()
     getIgnoreGrp()
