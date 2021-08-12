@@ -36,7 +36,7 @@ class WXSTU:
         cmd = 'tasklist'
         res = os.popen(cmd)
         output_str = res.read()  # 获得输出字符串
-        return True if ("WXWork.exe" in output_str) else False
+        return True if ("WXWork.exe" in output_str and "TxBugReport.exe" not in output_str) else False
 
     @classmethod
     def shutWX(cls):
@@ -98,3 +98,4 @@ class ctrl(threading.Thread):
                     r, msg = filter.filte(self.messageList.pop(0))
                     if not r is None:
                         self.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
+
