@@ -28,6 +28,9 @@ class sqliteControl(threading.Thread):
     @classmethod
     def run(cls):
         while True:
+            if Config.EVENTFLAG.is_set():
+                print("-------------------")
+                break
             conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
                                    db="wxwork_message")
             tableName = "msg"
@@ -35,7 +38,7 @@ class sqliteControl(threading.Thread):
             try:
                 while True:
                     if Config.EVENTFLAG.is_set():
-                        raise Exception(cls.name + "主动退出")
+                        raise Exception("消息线程主动退出")
                     if len(cls.MsgQueue) > 0:
                         conn.ping()
                         mCtrMsg = cls.MsgQueue.pop(0)

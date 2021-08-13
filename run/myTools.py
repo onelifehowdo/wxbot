@@ -33,13 +33,27 @@ class message:
 class WXSTU:
     @classmethod
     def getStatus(cls):
+        wx="0"
+        re="0"
         cmd = 'tasklist'
         res = os.popen(cmd)
         output_str = res.read()  # 获得输出字符串
-        return True if ("WXWork.exe" in output_str and "TxBugReport.exe" not in output_str) else False
+        if "WXWork.exe" in output_str :
+            wx="1"
+        if "TxBugReport.exe" in output_str:
+            re="1"
+        return wx+re
 
     @classmethod
     def shutWX(cls):
+        try:
+            cmd = 'taskkill /f /t /im TxBugReport.exe'
+            if "成功" in os.popen(cmd):
+                print("企业微信崩溃")
+        except:
+            pass
+        finally:
+            pass
         cmd = 'taskkill /f /t /im WXWork.exe'
         res = os.popen(cmd)
         output_str = res.read()  # 获得输出字符串
@@ -99,3 +113,9 @@ class ctrl(threading.Thread):
                     if not r is None:
                         self.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
 
+
+if __name__ == "__main__":
+    if WXSTU.getStatus():
+        print("ok")
+    else:
+        WXSTU.shutWX()

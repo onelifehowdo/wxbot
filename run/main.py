@@ -56,14 +56,10 @@ class EchoBot(wxwork.CallbackHandler):
     @wxwork.RECV_CALLBACK(in_class=True)
     def on_message(self, client_id, message_type, message_data):
         if message_type in self.canworklist and Config.ungrp(message_data["conversation_id"]) and "R" in message_data[
-            "conversation_id"] and ("at_list" in message_data.keys()):
-            if message_type == MessageType.MT_RECV_TEXT_MSG:
+            "conversation_id"]:
+            if message_type == MessageType.MT_RECV_TEXT_MSG and "at_list" in message_data.keys():
                 # 如果是文本消息
-                # print("-" * 30)
                 # print("文本消息")
-                # # print(message_type)
-                # print(message_data)
-                # print("-" * 30)
                 atList = message_data["at_list"]
                 cpId = message_data["conversation_id"]
                 cpName = Config.getCpname(cpId)
@@ -107,7 +103,7 @@ if __name__ == "__main__":
 
     while True:  # 循环重启
         Config.EVENTFLAG.clear()
-        if myTools.WXSTU.ping() and myTools.WXSTU.DBCanLink():
+        if myTools.WXSTU.ping() and myTools.WXSTU.DBCanLink() and myTools.WXSTU.getStatus()[0] == "0":
             if init.init():
                 if allMessage is None:
                     allMessage = mysqlAll.sqliteControl()
@@ -136,12 +132,12 @@ if __name__ == "__main__":
                 while True:
                     # print("----ThreadCount:", len(threading.enumerate()), threading.enumerate())
                     SysFlag = (
-                                allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping())
+                            myTools.WXSTU.getStatus() == "10" and allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping())
                     if SysFlag:  # 系统无状况
                         pass
                     else:  # 系统掉线
                         print("-----------掉线")
-                        if myTools.WXSTU.getStatus():
+                        if myTools.WXSTU.getStatus()[0] == "1":
                             if myTools.WXSTU.shutWX():
                                 print("关闭微信成功")
 
@@ -150,14 +146,14 @@ if __name__ == "__main__":
                         filter.join()
                         loader.join()
                         check.join()
+
                         allMessage = None
                         filter = None
                         loader = None
                         check = None
                         break
-                    time.sleep(0.5)
         else:
             Config.EVENTFLAG.set()
             print("网络掉线")
             # print("----DDDThreadCount:", len(threading.enumerate()), threading.enumerate())
-            time.sleep(20)
+            time.sleep(5)
