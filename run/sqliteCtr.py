@@ -3,9 +3,10 @@ import traceback
 
 import pymysql
 import string
-import time
+import time as ModelTime
 import threading
 import Config
+import myTools
 
 
 class ctrMsg:
@@ -68,10 +69,15 @@ class sqliteControl(threading.Thread):
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
+                            myTools.myPrint.print(
+                                ModelTime.strftime('[%Y-%m-%d %H:%M][MESSAGE]',
+                                                   ModelTime.localtime(
+                                                       time)) + cpName + "--" + speaker + ":" + text)
                             cls.rsp[cpName] = False
                         elif ctr == "NO_KEY":
                             cursor = conn.cursor()
-                            sql = 'SELECT processor FROM %s where cpid="%s" and type="message" and status=1 and speakertype="客户" order by time desc limit 1'
+                            # sql = 'SELECT processor FROM %s where cpid="%s" and type="message" and status=1 and speakertype="客户" order by time desc limit 1'
+                            sql = 'SELECT processor FROM %s where cpid="%s" and type="message" and status=1 order by time desc limit 1'
                             data = (tableName, cpId)
                             cursor.execute(str.format(sql % data))
                             t = cursor.fetchone()
@@ -90,6 +96,10 @@ class sqliteControl(threading.Thread):
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
+                            myTools.myPrint.print(
+                                ModelTime.strftime('[%Y-%m-%d %H:%M][MESSAGE]',
+                                                   ModelTime.localtime(
+                                                       time)) + cpName + "--" + speaker + ":" + text)
                             cls.rsp[cpName] = False
                         elif ctr == "TRANSFER":
                             # print("消息转移")
@@ -105,6 +115,9 @@ class sqliteControl(threading.Thread):
                             cursor.execute(str.format(sql % data))
                             conn.commit()
                             cursor.close()
+                            myTools.myPrint.print(
+                                ModelTime.strftime('[%Y-%m-%d %H:%M][TRANSFER]',
+                                                   ModelTime.localtime(time)) + cpName + "--" + speaker + ":" + text)
                             cls.rsp[cpName] = False
                         elif ctr == "STAFF":
                             if type == "message":
@@ -114,7 +127,11 @@ class sqliteControl(threading.Thread):
                                 cursor.execute(str.format(sql % data))
                                 conn.commit()
                                 cursor.close()
-                                print("[%s]响应" % speaker)
+                                # myTools.myPrint.print("[%s]响应" % speaker)
+                                myTools.myPrint.print(
+                                    ModelTime.strftime('[%Y-%m-%d %H:%M][RESPONSE]',
+                                                       ModelTime.localtime(
+                                                           time)) + cpName + "--" + speaker + ":" + text)
                             elif type == "problem":
                                 cursor = conn.cursor()
                                 sql = 'UPDATE %s SET processor="%s" ,status=1 ,endtime=%d WHERE cpid="%s" and type="message" and status=0'
@@ -127,7 +144,12 @@ class sqliteControl(threading.Thread):
                                 cursor.execute(str.format(sql % data))
                                 conn.commit()
                                 cursor.close()
+                                myTools.myPrint.print(
+                                    ModelTime.strftime('[%Y-%m-%d %H:%M][PROBLEM]',
+                                                       ModelTime.localtime(
+                                                           time)) + cpName + "--" + speaker + ":" + text)
                                 cls.rsp[cpName] = False
+
             except Exception as e:
                 # conn.rollback()
                 # logging.getLogger("sql").error(traceback.format_exc())

@@ -1,6 +1,6 @@
 import os
 import threading
-import time
+import time as ModelTime
 
 import pymysql
 
@@ -11,15 +11,22 @@ import filter
 
 
 class myPrint:
-    i = 0
+    # i = 0
+
+    data = {'dataList': [], 'ThreadStatus': []}
 
     @classmethod
-    def print(cls, s):
-        print(s)
-        cls.i += 1
-        cls.i = cls.i % 500
-        if cls.i == 10:
-            os.system("cls")
+    def print(cls, s, flag=False):
+        if flag:
+            print(s)
+        if len(cls.data['dataList']) >= 2000:
+            cls.data['dataList'].pop(0)
+        cls.data['dataList'].append(s)
+        # print(s)
+        # cls.i += 1
+        # cls.i = cls.i % 500
+        # if cls.i == 10:
+        #     os.system("cls")
 
 
 class message:
@@ -30,19 +37,20 @@ class message:
         self.text = text
         self.time = time
 
+
 class WXSTU:
     @classmethod
     def getStatus(cls):
-        wx="0"
-        re="0"
+        wx = "0"
+        re = "0"
         cmd = 'tasklist'
         res = os.popen(cmd)
         output_str = res.read()  # 获得输出字符串
-        if "WXWork.exe" in output_str :
-            wx="1"
+        if "WXWork.exe" in output_str:
+            wx = "1"
         if "TxBugReport.exe" in output_str:
-            re="1"
-        return wx+re
+            re = "1"
+        return wx + re
 
     @classmethod
     def shutWX(cls):
@@ -80,6 +88,7 @@ class WXSTU:
                 conn.close()
             return flag
 
+
 # 任务分配线程
 class ctrl(threading.Thread):
     messageList = []
@@ -95,6 +104,7 @@ class ctrl(threading.Thread):
         self.m_ctr = sqliteCtr.sqliteControl()
         self.m_ctr.setName("message Thread")
         threading.Thread.__init__(self)
+
     @classmethod
     def addMessage(cls, msg):
         cls.messageList.append(msg)
@@ -112,6 +122,10 @@ class ctrl(threading.Thread):
                     r, msg = filter.filte(self.messageList.pop(0))
                     if not r is None:
                         self.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
+                    else:
+                        myPrint.print(
+                            ModelTime.strftime('[%Y-%m-%d %H:%M][UNUSEFUL]',
+                                          ModelTime.localtime(msg.time)) + msg.cpName + "--" + msg.speaker + ":" + msg.text)
 
 
 if __name__ == "__main__":

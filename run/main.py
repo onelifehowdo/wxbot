@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 import wxwork
 import json
@@ -16,6 +17,7 @@ import grpNaGet
 import mysqlAll
 import Config
 import loadData
+import socket
 import os
 
 wxwork_manager = WxWorkManager(libs_path='libs')
@@ -67,8 +69,8 @@ class EchoBot(wxwork.CallbackHandler):
                 speaker = message_data["sender_name"]
                 text = str(message_data["content"]).replace("\"", "")
                 mtime = int(message_data["send_time"])
-                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M',
-                                                          time.localtime()) + "]" + cpName + "--" + speaker + ":" + text)
+                # myTools.myPrint.print(time.strftime('[%Y-%m-%d %H:%M]',
+                #                                           time.localtime()) + cpName + "--" + speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
                 self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
                 if "$$$" in text and (Config.test_isHZstaff(speaker) or Config.tempisrid(senderId)):
@@ -86,13 +88,40 @@ class EchoBot(wxwork.CallbackHandler):
                 speaker = message_data["sender_name"]
                 text = "文$件$消$息"
                 mtime = int(message_data["send_time"])
-                myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M',
-                                                          time.localtime()) + "]" + cpName + "--" + speaker + ":" + text)
+                # myTools.myPrint.print("[" + time.strftime('%Y-%m-%d %H:%M',
+                #                                           time.localtime()) + "]" + cpName + "--" + speaker + ":" + text)
                 self.contraller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime))
                 self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
 
 
+class Resquest(BaseHTTPRequestHandler):
+
+    def log_message(self, format, *args):
+        pass
+
+    def do_GET(self):
+        try:
+            if "data" in self.path:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(myTools.myPrint.data).encode())
+        except:
+            pass
+
+
 if __name__ == "__main__":
+
+    def myserver():
+        IP = socket.gethostbyname(socket.gethostname())
+        host = (IP, 8888)
+        server = HTTPServer(host, Resquest)
+        print("Starting server, listen at: %s:%s" % host)
+        server.serve_forever()
+
+
+    threading.Thread(target=myserver, name="SERVER").start()
 
     echoBot = None
     allMessage = None
@@ -107,19 +136,19 @@ if __name__ == "__main__":
             if init.init():
                 if allMessage is None:
                     allMessage = mysqlAll.sqliteControl()
-                    allMessage.setName("全部消息线程")
+                    allMessage.setName("All Message Threads")
                     allMessage.start()
                 if filter is None:
                     filter = myTools.ctrl()
-                    filter.setName("过滤线程")
+                    filter.setName("Filter Thread")
                     filter.start()
                 if loader is None:
                     loader = loadData.Loading()
-                    loader.setName("动态加载线程")
+                    loader.setName("Dynamic Loading Thread")
                     loader.start()
                 if check is None:
                     check = checker.check()
-                    check.setName("提醒线程")
+                    check.setName("Reminder Thread")
                     check.start()
                 if echoBot is None:
                     echoBot = EchoBot()
@@ -131,6 +160,9 @@ if __name__ == "__main__":
                 # 阻塞主线程
                 while True:
                     # print("----ThreadCount:", len(threading.enumerate()), threading.enumerate())
+                    myTools.myPrint.data['ThreadStatus'].clear()
+                    for i in threading.enumerate():
+                        myTools.myPrint.data['ThreadStatus'].append(i.getName())
                     SysFlag = (
                             myTools.WXSTU.getStatus() == "10" and allMessage.is_alive() and filter.is_alive() and loader.is_alive() and myTools.WXSTU.ping())
                     if SysFlag:  # 系统无状况

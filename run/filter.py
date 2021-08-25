@@ -14,7 +14,7 @@ def cleanMsg(m_text):
 
 def filte(msg):
     msgType = None
-    sqlMsg = None
+    sqlMsg = msg
     # r = Config.test_isHZstaff(msg.speaker)
     r = Config.tempisrid(msg.speakid)
     if r:  # 公司员工
@@ -88,7 +88,7 @@ def filte(msg):
                             msgType = "NO_KEY"
                     break
             else:
-                return None, None  # 不处理
+                return None, sqlMsg  # 不处理
         else:  # 分析消息
             m_text = str(msg.text)
             m_text = cleanMsg(m_text)

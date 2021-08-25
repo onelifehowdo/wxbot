@@ -3,9 +3,10 @@ import traceback
 
 import pymysql
 import string
-import time
+import time as ModelTime
 import threading
 import Config
+import myTools
 
 
 class ctrMsg:
@@ -55,6 +56,8 @@ class sqliteControl(threading.Thread):
                         cursor.execute(str.format(sql % data))
                         conn.commit()
                         cursor.close()
+                        # myTools.myPrint.print(
+                        #     ModelTime.strftime('[%Y-%m-%d %H:%M]', ModelTime.localtime(time))+ cpName + "--" + speaker + ":" + text)
 
             except Exception as e:
                 # conn.rollback()
