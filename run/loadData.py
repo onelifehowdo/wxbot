@@ -13,11 +13,13 @@ class Loading(threading.Thread):
                         raise Exception(self.name + "主动退出")
                     time.sleep(1)
                 with Config.LOCK:
+                    # print(time.strftime('[%Y-%m-%d %H:%M:%S]', time.localtime(time.time())), "load...")
                     init.getWorkDay(F=False)
                     init.getUnUseMsg(F=False)
                     init.getIgnoreGrp(F=False)
                     init.getStaff(F=False)
                     init.getGrpId(F=False)
+                    # print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(time.time())),"load ok")
         finally:
             pass
 

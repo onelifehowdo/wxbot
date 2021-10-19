@@ -13,52 +13,54 @@ def cleanMsg(m_text):
     return m_text
 
 def filte(msg):
+    # print(msg.speaker,msg.text)
     msgType = None
     sqlMsg = msg
     # r = Config.test_isHZstaff(msg.speaker)
-    r = Config.tempisrid(msg.speakid)
+    r = Config.isAllStaffById(msg.speakid)
     if r:  # 公司员工
         msgType = "STAFF"
         sqlMsg = Message.sqlMessage(msg, "应用研发部")
+        sqlMsg.setSpeaker(Config.getAllStaffNameById(msg.speakid))
         sqlMsg.setType("message")
         sqlMsg.setStatus(0)
         sqlMsg.setPerson(None)
         Model, engineerName = init.getbean(str(msg.text))
-        r = Config.test_isStaff(msg.speaker)
+        r = Config.isStaffById(msg.speakid)
         if r:  # 应用研发部
             if len(msg.atList) > 0:  # @回复
                 if ("$_$" in msg.text):
                     sqlMsg.setType("problem")
-                    sqlMsg.setEngineer(msg.speaker)  # 给自己
+                    sqlMsg.setEngineer(sqlMsg.speaker)  # 给自己
                     # Model, engineerName = init.getbean(str(msg.text))
                     sqlMsg.setModle(Model)
                     for at in msg.atList:
-                        if Config.test_isStaff(at['nickname']):  # 给别人
-                            sqlMsg.setEngineer(at['nickname'])
+                        if Config.isStaffByName(at):  # 给别人
+                            sqlMsg.setEngineer(at)
                             continue
                 else:  # 未检测命令
                     if len(msg.atList) > 0:
                         for at in msg.atList:  # 检测到@部门的人
-                            if Config.test_isStaff(at['nickname']):
+                            if Config.isStaffByName(at):
                                 sqlMsg.setType("message")
                                 sqlMsg.speakerType = "应用研发部"
                                 sqlMsg.setModle(Model)
-                                sqlMsg.setEngineer(at['nickname'])
+                                sqlMsg.setEngineer(at)
                                 msgType = "TRANSFER"
             else:#无@回复
                 if "$_$" in msg.text:
                     sqlMsg.setType("problem")
-                    sqlMsg.setEngineer(msg.speaker)  # 给自己
+                    sqlMsg.setEngineer(sqlMsg.speaker)  # 给自己
                     # Model, engineerName = init.getbean(str(msg.text))
                     sqlMsg.setModle(Model)
         else:  # 销售
             if len(msg.atList) > 0:  # @回复
                 for at in msg.atList:
-                    if Config.test_isStaff(at['nickname']):  # @应用研发部
+                    if Config.isStaffByName(at):  # @应用研发部
                         sqlMsg.setType("message")
                         sqlMsg.speakerType = "非应用研发部"
                         sqlMsg.setModle(Model)
-                        sqlMsg.setEngineer(at['nickname'])
+                        sqlMsg.setEngineer(at)
                         msgType = "HAVE_KEY"
                         break
             else:  # 响应消息
@@ -67,7 +69,7 @@ def filte(msg):
     else:
         if len(msg.atList) > 0:  # 分析@
             for at in msg.atList:
-                if Config.test_isHZstaff(at['nickname']):
+                if Config.isAllStaffById(at):
                     m_text = str(msg.text)
                     m_text = cleanMsg(m_text)
                     if not Config.isBoring(m_text):  # 有意义

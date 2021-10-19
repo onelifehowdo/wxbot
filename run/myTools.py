@@ -124,8 +124,8 @@ class ctrl(threading.Thread):
                         self.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
                     else:
                         myPrint.print(
-                            ModelTime.strftime('[%Y-%m-%d %H:%M][UNUSEFUL]',
-                                          ModelTime.localtime(msg.time)) + msg.cpName + "--" + msg.speaker + ":" + msg.text)
+                            ModelTime.strftime('[%Y-%m-%d %H:%M:%S][UNUSEFUL]',
+                                          ModelTime.localtime(msg.time/1000)) + msg.cpName + "--" + msg.speaker + ":" + msg.text)
 
 
 if __name__ == "__main__":

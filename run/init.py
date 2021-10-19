@@ -1,3 +1,6 @@
+import logging
+import time
+
 import pymysql
 import xlrd
 import Config
@@ -41,7 +44,7 @@ def getWorkDay(F=True):
 def getUnUseMsg(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
-        print("正在读取废话消息")
+        logging.info("正在读取废话消息")
     cursor = conn.cursor()
     sql = 'SELECT message FROM boringmsg'
     cursor.execute(sql)
@@ -52,6 +55,7 @@ def getUnUseMsg(F=True):
     conn.commit()
     cursor.close()
     conn.close()
+    # print("废话数量：",len(Config.boring))
 
 
 def getStaff(F=True):
@@ -59,15 +63,15 @@ def getStaff(F=True):
     if F:
         print("正在读取公司员工")
     cursor = conn.cursor()
-    sql = 'SELECT name , department FROM wxwork_message.staff'
+    sql = 'SELECT rid , department,name FROM wxwork_message.staff'
     cursor.execute(sql)
     r = cursor.fetchall()
     Config.hz_all_staff.clear()
     Config.staffList.clear()
     for i in r:
-        Config.hz_all_staff.append(i[0])
+        Config.hz_all_staff[i[0]] = i[2]
         if i[1] == "应用研发部":
-            Config.staffList.append(i[0])
+            Config.staffList[i[0]] = i[2]
     conn.commit()
     cursor.close()
     conn.close()
@@ -78,7 +82,7 @@ def getGrpId(F=True):
     if F:
         print("正在读取群组名称")
     cursor = conn.cursor()
-    sql = 'SELECT rid,groupname FROM wxwork_message.groupnote'
+    sql = 'SELECT chat_id,name FROM wxwork_message.wx_group'
     cursor.execute(sql)
     r = cursor.fetchall()
     Config.CP.clear()
@@ -119,6 +123,17 @@ def getrid():
     cursor.close()
     conn.close()
 
+def getseq():
+    conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
+    sql = 'SELECT max(seq) FROM wxwork_message.AllMessageTable'
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    r = cursor.fetchone()
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return r[0]
+
 
 def init():
     print("正在读取关键字")
@@ -155,3 +170,6 @@ def getbean(msg):
     return model, name
 # init()
 # print(getbean("mqtt"))
+
+if __name__ == "__main__":
+    print(getseq())

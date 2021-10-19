@@ -1,5 +1,5 @@
 class message:
-    def __init__(self, atlist, cpId, cpName, speakid, speaker, text, time):
+    def __init__(self, atlist, cpId, cpName, speakid, speaker, text, time, seq):
         self.atList = atlist
         self.cpId = cpId
         self.cpName = cpName
@@ -7,6 +7,7 @@ class message:
         self.speaker = speaker
         self.text = text
         self.time = time
+        self.seq = seq
 
 
 class sqlMessage:
@@ -17,6 +18,7 @@ class sqlMessage:
     speakerType = ""
     text = ""
     time = 0
+    seq = 0
 
     type = ""
     model = None
@@ -31,12 +33,16 @@ class sqlMessage:
         self.speaker = msg.speaker
         self.text = msg.text
         self.time = msg.time
+        self.seq = msg.seq
         self.speakerType = speakertype
 
     # def setCpName(self,id):
     #     self.id=id
     def setType(self, type):
         self.type = type
+
+    def setSpeaker(self, speaker):
+        self.speaker = speaker
 
     def setModle(self, model):
         self.model = model
