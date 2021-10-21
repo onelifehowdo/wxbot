@@ -76,3 +76,4 @@ class check(threading.Thread):
                 if Config.EVENTFLAG.is_set():
                     raise Exception(self.name + "主动退出")
                 time.sleep(1)
+

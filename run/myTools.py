@@ -66,15 +66,16 @@ class ctrl(threading.Thread):
     messageList = []
     ins = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls.ins is None:
-            cls.ins = super().__new__(cls)
-        return cls.ins
+    # def __new__(cls, *args, **kwargs):
+    #     if cls.ins is None:
+    #         cls.ins = super().__new__(cls)
+    #     return cls.ins
 
-    def __init__(self):
+    def __init__(self, MsgThread):
         self.id = id
-        self.m_ctr = sqliteCtr.sqliteControl()
-        self.m_ctr.setName("message Thread")
+        self.MsgThread = MsgThread
+        # self.m_ctr = sqliteCtr.sqliteControl()
+        # self.m_ctr.setName("message Thread")
         threading.Thread.__init__(self)
 
     @classmethod
@@ -84,20 +85,20 @@ class ctrl(threading.Thread):
     def run(self):
         # 任务分配
         Config.printLog.info("任务分配启动")
-        self.m_ctr.start()
+        # self.m_ctr.start()
         while True:
             if Config.EVENTFLAG.is_set():
-                self.m_ctr.join()
+                # self.m_ctr.join()
                 raise Exception(self.name + "主动退出")
             with Config.LOCK:
                 if len(self.messageList) > 0:
                     r, msg = filter.filte(self.messageList.pop(0))
                     if not r is None:
-                        self.m_ctr.add(sqliteCtr.ctrMsg(r, msg))
+                        self.MsgThread.add(sqliteCtr.ctrMsg(r, msg))
                     else:
                         myPrint.print(
                             ModelTime.strftime('[%Y-%m-%d %H:%M:%S][UNUSEFUL]',
-                                          ModelTime.localtime(msg.time/1000)) + msg.cpName + ":" + msg.text)
+                                               ModelTime.localtime(msg.time / 1000)) + msg.cpName + ":" + msg.text)
 
 
 if __name__ == "__main__":

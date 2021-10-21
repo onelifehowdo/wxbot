@@ -120,9 +120,12 @@ banner = r"""
 #                 self.allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime))
 
 
+controller = myTools.ctrl(None)
+allMsgCtr = mysqlAll.sqliteControl()
 def on_message(message_type, message_data):
-    controller = myTools.ctrl()
-    allMsgCtr = mysqlAll.sqliteControl()
+    # print(message_data)
+    # controller = myTools.ctrl()
+    # allMsgCtr = mysqlAll.sqliteControl()
     if Config.ungrp(message_data["conversation_id"]):
         if message_type == "text":
             # 如果是文本消息
@@ -141,12 +144,6 @@ def on_message(message_type, message_data):
             #                                           time.localtime()) + cpName + "--" + speaker + ":" + text)
             controller.addMessage(Message.message(atList, cpId, cpName, senderId, speaker, text, mtime, seq))
             allMsgCtr.add(Message.message(None, cpId, cpName, senderId, speaker, text, mtime, seq))
-            # if "$$$" in text and (Config.test_isHZstaff(speaker) or Config.tempisrid(senderId)):
-            #     p = text.split("$$$")
-            #     m_name = p[0]
-            #     m_note = p[1]
-            #     grpNaGet.grpget(cpId, m_name, speaker, mtime, m_note).start()
-            # pass
         else:
             # print("文件消息")
             # print(message_data)
@@ -193,8 +190,9 @@ def getData():
                     # print("Seq",data["seq"])
                     r = requests.get("http://47.99.90.106:65535/message", params=data)
                     Json = json.loads(r.text)
+                    # print(r.text)
                     for message_data in Json:
-                        # data["seq"] = message_data["seq"]
+                        # print(message_data)
                         on_message(message_data["message_type"], message_data)
                     # print("加载数据完毕，加载:",len(Json))
                     time.sleep(0.5)
@@ -222,6 +220,7 @@ if __name__ == "__main__":
     while True:
         filter = None
         loader = None
+        workMsg = None
         allMessage = None
         server = None
         getMessage = None
@@ -233,14 +232,18 @@ if __name__ == "__main__":
             if server is None:
                 server = threading.Thread(target=myserver, name="ServerThread")
                 server.start()
-            if filter is None:
-                filter = myTools.ctrl()
-                filter.setName("FilterThread")
-                filter.start()
+            if workMsg is None:
+                workMsg = sqliteCtr.sqliteControl()
+                workMsg.setName("WorkMessageThread")
+                workMsg.start()
             if allMessage is None:
                 allMessage = mysqlAll.sqliteControl()
                 allMessage.setName("WholeMessageThread")
                 allMessage.start()
+            if filter is None:
+                filter = myTools.ctrl(workMsg)
+                filter.setName("FilterThread")
+                filter.start()
             if loader is None:
                 loader = loadData.Loading()
                 loader.setName("DynamicLoadingThread")
@@ -253,6 +256,9 @@ if __name__ == "__main__":
                     myTools.myPrint.data['ThreadStatus'].clear()
                     for i in threading.enumerate():
                         myTools.myPrint.data['ThreadStatus'].append(i.getName())
+
+                    myTools.myPrint.data['ThreadStatus'].append(f"WholeMessageQueue: {len(allMessage.MsgQueue)}")
+                    myTools.myPrint.data['ThreadStatus'].append(f"WorkQueue: {len(workMsg.MsgQueue)}")
                     time.sleep(0.5)
                 else:
                     # logging.info(time.strftime([%Y-%m-%d %H:%M:%S],time.localtime(time.time())),"网络掉线")
@@ -260,6 +266,7 @@ if __name__ == "__main__":
                     Config.EVENTFLAG.set()
                     filter.join()
                     loader.join()
+                    workMsg.join()
                     allMessage.join()
                     server.join()
                     getMessage.join()
