@@ -44,7 +44,6 @@ banner = r"""
              \  \ `-.   \_ __\ /__ _/   .-` /  /
         ======`-.____`-.___\_____/___.-`____.-'======
                            `=---='
-===========================================================
 """
 
 
@@ -210,7 +209,7 @@ def myserver():
     IP = socket.gethostbyname(socket.gethostname())
     host = (IP, 8888)
     server = HTTPServer(host, Resquest)
-    print("Starting server, listen at: %s:%s" % host)
+    Config.printLog.info("Starting server, listen at: %s:%s" % host)
     server.serve_forever()
 
 
@@ -220,25 +219,59 @@ if __name__ == "__main__":
 #####################
     print(banner)
 #########################
-    filter = None
-    loader = None
-    allMessage = None
-    if init.init():
-        if filter is None:
-            filter = myTools.ctrl()
-            filter.setName("Filter Thread")
-            filter.start()
-        if allMessage is None:
-            allMessage = mysqlAll.sqliteControl()
-            allMessage.setName("All Message Threads")
-            allMessage.start()
-        if loader is None:
-            loader = loadData.Loading()
-            loader.setName("Dynamic Loading Thread")
-            loader.start()
+    while True:
+        filter = None
+        loader = None
+        allMessage = None
+        server = None
+        getMessage = None
+        Config.EVENTFLAG.clear()
+        if not (myTools.NetTools.ping() and myTools.NetTools.DBCanLink()):
+            time.sleep(5)
+            continue
+        if init.init():
+            if server is None:
+                server = threading.Thread(target=myserver, name="ServerThread")
+                server.start()
+            if filter is None:
+                filter = myTools.ctrl()
+                filter.setName("FilterThread")
+                filter.start()
+            if allMessage is None:
+                allMessage = mysqlAll.sqliteControl()
+                allMessage.setName("WholeMessageThread")
+                allMessage.start()
+            if loader is None:
+                loader = loadData.Loading()
+                loader.setName("DynamicLoadingThread")
+                loader.start()
+            if getMessage is None:
+                getMessage = threading.Thread(target=getData, name="GetMeassageThread")
+                getMessage.start()
+            while True:
+                if myTools.NetTools.ping() and myTools.NetTools.DBCanLink():
+                    myTools.myPrint.data['ThreadStatus'].clear()
+                    for i in threading.enumerate():
+                        myTools.myPrint.data['ThreadStatus'].append(i.getName())
+                    time.sleep(0.5)
+                else:
+                    # logging.info(time.strftime([%Y-%m-%d %H:%M:%S],time.localtime(time.time())),"网络掉线")
+                    Config.printLog.info("--------掉线--------")
+                    Config.EVENTFLAG.set()
+                    filter.join()
+                    loader.join()
+                    allMessage.join()
+                    server.join()
+                    getMessage.join()
+                    break
+                    # filter = None
+                    # loader = None
+                    # allMessage = None
+                    # server = None
+                    # getMessage = None
 
-    threading.Thread(target=myserver, name="SERVER").start()
-    threading.Thread(target=getData(), name="GETDATA").start()
+
+
 ######################
 # def myserver():
 #     IP = socket.gethostbyname(socket.gethostname())

@@ -34,12 +34,11 @@ class sqliteControl(threading.Thread):
     def run(cls):
         while True:
             if Config.EVENTFLAG.is_set():
-                print("-------------------")
                 break
             conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
                                    db="wxwork_message")
             # tableName = "msg"
-            print("消息数据库打开成功")
+            Config.printLog.info("消息数据库打开成功")
             try:
                 while True:
                     if Config.EVENTFLAG.is_set():
@@ -88,7 +87,7 @@ class sqliteControl(threading.Thread):
                             myTools.myPrint.print(
                                 ModelTime.strftime('[%Y-%m-%d %H:%M:%S][MESSAGE]',
                                                    ModelTime.localtime(
-                                                       time/1000)) + cpName + "--" + speaker + ":" + text)
+                                                       time/1000)) + cpName + ":" + text+" -> "+engineer)
                             cls.rsp[cpName] = False
                         elif ctr == "NO_KEY":
                             cursor = conn.cursor()
@@ -121,7 +120,7 @@ class sqliteControl(threading.Thread):
                             myTools.myPrint.print(
                                 ModelTime.strftime('[%Y-%m-%d %H:%M:%S][MESSAGE]',
                                                    ModelTime.localtime(
-                                                       time/1000)) + cpName + "--" + speaker + ":" + text)
+                                                       time/1000)) + cpName + ":" + text+" -> "+engineer)
                             cls.rsp[cpName] = False
                         elif ctr == "TRANSFER":
                             # print("消息转移")
@@ -145,7 +144,7 @@ class sqliteControl(threading.Thread):
                             cursor.close()
                             myTools.myPrint.print(
                                 ModelTime.strftime('[%Y-%m-%d %H:%M:%S][TRANSFER]',
-                                                   ModelTime.localtime(time/1000)) + cpName + "--" + speaker + ":" + text)
+                                                   ModelTime.localtime(time/1000)) + cpName + ":[" +speaker+"]"+ text+" -> "+engineer)
                             cls.rsp[cpName] = False
                         elif ctr == "STAFF":
                             if type == "message":
@@ -202,10 +201,10 @@ class sqliteControl(threading.Thread):
             except Exception as e:
                 # conn.rollback()
                 logging.getLogger("sql").error(traceback.format_exc())
-                print("消息数据库重连")
+                Config.printLog.info("消息数据库重连")
                 continue
                 pass
             finally:
                 if not conn is None:
                     conn.close()
-                    print("消息数据库关闭")
+                    Config.printLog.info("消息数据库关闭")

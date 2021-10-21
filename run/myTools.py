@@ -38,35 +38,7 @@ class message:
         self.time = time
 
 
-class WXSTU:
-    @classmethod
-    def getStatus(cls):
-        wx = "0"
-        re = "0"
-        cmd = 'tasklist'
-        res = os.popen(cmd)
-        output_str = res.read()  # 获得输出字符串
-        if "WXWork.exe" in output_str:
-            wx = "1"
-        if "TxBugReport.exe" in output_str:
-            re = "1"
-        return wx + re
-
-    @classmethod
-    def shutWX(cls):
-        try:
-            cmd = 'taskkill /f /t /im TxBugReport.exe'
-            if "成功" in os.popen(cmd):
-                print("企业微信崩溃")
-        except:
-            pass
-        finally:
-            pass
-        cmd = 'taskkill /f /t /im WXWork.exe'
-        res = os.popen(cmd)
-        output_str = res.read()  # 获得输出字符串
-        return True if ("成功" in output_str) else False
-
+class NetTools:
     @classmethod
     def ping(cls):
         cmd = 'ping -n 1 www.tencent.com'
@@ -111,7 +83,7 @@ class ctrl(threading.Thread):
 
     def run(self):
         # 任务分配
-        print("任务分配启动")
+        Config.printLog.info("任务分配启动")
         self.m_ctr.start()
         while True:
             if Config.EVENTFLAG.is_set():
@@ -125,11 +97,12 @@ class ctrl(threading.Thread):
                     else:
                         myPrint.print(
                             ModelTime.strftime('[%Y-%m-%d %H:%M:%S][UNUSEFUL]',
-                                          ModelTime.localtime(msg.time/1000)) + msg.cpName + "--" + msg.speaker + ":" + msg.text)
+                                          ModelTime.localtime(msg.time/1000)) + msg.cpName + ":" + msg.text)
 
 
 if __name__ == "__main__":
-    if WXSTU.getStatus():
-        print("ok")
-    else:
-        WXSTU.shutWX()
+    pass
+    # if WXSTU.getStatus():
+    #     print("ok")
+    # else:
+    #     WXSTU.shutWX()

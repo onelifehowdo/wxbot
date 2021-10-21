@@ -1,5 +1,9 @@
+import logging
 import threading
 import time
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='[%Y-%m-%d %H:%M:%S]')
+printLog = logging.getLogger()
 
 EVENTFLAG = threading.Event()
 MESSAGEFLAG = threading.Event()
@@ -17,30 +21,34 @@ holiday = []
 workDay = []
 
 
-
 def isStaffById(id):
     return id in staffList.keys()
+
+
 def isStaffByName(name):
-    flag=False
+    flag = False
     for m_id in staffList:
-        if staffList[m_id]==name:
-            flag=True
+        if staffList[m_id] == name:
+            flag = True
             break
     return flag
+
 
 def isAllStaffById(id):
     return id in hz_all_staff.keys()
+
+
 def isAllStaffByName(name):
-    flag=False
+    flag = False
     for m_id in hz_all_staff:
-        if hz_all_staff[m_id]==name:
-            flag=True
+        if hz_all_staff[m_id] == name:
+            flag = True
             break
     return flag
 
+
 def getAllStaffNameById(id):
     return hz_all_staff[id]
-
 
 
 # def tempisrid(rid):
@@ -77,7 +85,7 @@ def isBoring(text):
 
 
 def isWorkTime(mt):
-    mt = time.localtime(int(mt/1000))
+    mt = time.localtime(int(mt / 1000))
     todayWork = False
     WEEK = int(time.strftime('%w', mt))
     DATE = time.strftime('%Y-%m-%d', mt)
@@ -94,7 +102,10 @@ def isWorkTime(mt):
 
     return 1 if (todayWork and nowWork) else 0
 
-# if __name__ == "__main__":
+
+if __name__ == "__main__":
+    # pass
+    printLog.info("123")
 #     engineer = {
 #         "1688852895879505": "孙张鑫"
 #     }

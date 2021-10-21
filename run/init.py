@@ -24,7 +24,7 @@ class mdata:
 def getWorkDay(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
-        print("正在读取工作日配置")
+        Config.printLog.info("正在读取工作日配置")
     cursor = conn.cursor()
     sql = 'SELECT * FROM wxwork_message.workdate;'
     cursor.execute(sql)
@@ -44,7 +44,7 @@ def getWorkDay(F=True):
 def getUnUseMsg(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
-        logging.info("正在读取废话消息")
+        Config.printLog.info("正在读取废话消息")
     cursor = conn.cursor()
     sql = 'SELECT message FROM boringmsg'
     cursor.execute(sql)
@@ -61,7 +61,7 @@ def getUnUseMsg(F=True):
 def getStaff(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
-        print("正在读取公司员工")
+        Config.printLog.info("正在读取公司员工")
     cursor = conn.cursor()
     sql = 'SELECT rid , department,name FROM wxwork_message.staff'
     cursor.execute(sql)
@@ -80,7 +80,7 @@ def getStaff(F=True):
 def getGrpId(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
-        print("正在读取群组名称")
+        Config.printLog.info("正在读取群组名称")
     cursor = conn.cursor()
     sql = 'SELECT chat_id,name FROM wxwork_message.wx_group'
     cursor.execute(sql)
@@ -97,7 +97,7 @@ def getGrpId(F=True):
 def getIgnoreGrp(F=True):
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     if F:
-        print("正在读取不需要处理的群")
+        Config.printLog.info("正在读取不需要处理的群")
     cursor = conn.cursor()
     sql = 'SELECT rid,cpname FROM wxwork_message.ignoreGrp;'
     cursor.execute(sql)
@@ -110,8 +110,9 @@ def getIgnoreGrp(F=True):
     conn.close()
 
 
-def getrid():
-    print("正在读取RID")
+def getrid(F=True):
+    if F:
+        Config.printLog.info("正在读取RID")
     conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g", db="wxwork_message")
     sql = 'SELECT *FROM wxwork_message.staff where rid is not NULL'
     cursor = conn.cursor()
@@ -136,7 +137,7 @@ def getseq():
 
 
 def init():
-    print("正在读取关键字")
+    Config.printLog.info("正在读取关键字")
     xl = xlrd.open_workbook(r'keyword.xlsx')
     sheet = xl.sheet_by_index(0)
     mlist.clear()

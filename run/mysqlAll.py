@@ -37,7 +37,7 @@ class sqliteControl(threading.Thread):
                 break
             conn = pymysql.connect(host="120.26.54.146", user="wxwork_message", passwd="6CmnpPoS1jwIM%5g",
                                    db="wxwork_message")
-            print("全部消息数据库打开成功")
+            Config.printLog.info("全部消息数据库打开成功")
             try:
                 while True:
                     if Config.EVENTFLAG.is_set():
@@ -82,10 +82,10 @@ class sqliteControl(threading.Thread):
             except Exception as e:
                 # conn.rollback()
                 logging.getLogger("sql").error(traceback.format_exc())
-                print("全部消息数据库断联")
+                Config.printLog.info("全部消息数据库断联")
                 continue
                 pass
             finally:
                 if not conn is None:
                     conn.close()
-                    print("全部消息数据库关闭")
+                    Config.printLog.info("全部消息数据库关闭")

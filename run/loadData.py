@@ -1,5 +1,8 @@
 import threading
 import time
+
+import requests
+
 import init
 import Config
 class Loading(threading.Thread):
@@ -14,11 +17,18 @@ class Loading(threading.Thread):
                     time.sleep(1)
                 with Config.LOCK:
                     # print(time.strftime('[%Y-%m-%d %H:%M:%S]', time.localtime(time.time())), "load...")
-                    init.getWorkDay(F=False)
-                    init.getUnUseMsg(F=False)
-                    init.getIgnoreGrp(F=False)
-                    init.getStaff(F=False)
-                    init.getGrpId(F=False)
+                    try:
+                        try:
+                            requests.get("http://wxwork.openluat.com:8080/sun")
+                        except:
+                            pass
+                        init.getWorkDay(F=False)
+                        init.getUnUseMsg(F=False)
+                        init.getIgnoreGrp(F=False)
+                        init.getStaff(F=False)
+                        init.getGrpId(F=False)
+                    except:
+                        continue
                     # print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(time.time())),"load ok")
         finally:
             pass
